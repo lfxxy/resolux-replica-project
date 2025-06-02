@@ -16,6 +16,9 @@ const Header = () => {
               src="/lovable-uploads/5d63c41f-2b65-4e10-b667-c1c5d3b8b6ad.png" 
               alt="Resolux Logo" 
               className="w-8 h-8"
+              loading="eager"
+              width="32"
+              height="32"
             />
             <span className="text-2xl font-bold text-white">Resolux</span>
           </Link>
@@ -44,7 +47,15 @@ const Header = () => {
             >
               Account
             </Link>
-            <span className="text-gray-300 hover:text-white transition-colors cursor-pointer">Support</span>
+            <a 
+              href="https://discord.gg/resolux" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-gray-300 hover:text-white transition-colors cursor-pointer"
+              title="Open a ticket in Discord for support"
+            >
+              Support
+            </a>
           </nav>
         </div>
         <Button 

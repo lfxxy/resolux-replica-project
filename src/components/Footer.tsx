@@ -1,12 +1,7 @@
 
-const Footer = () => {
-  const slogans = [
-    "Dominate the Game, Not Your Wallet.",
-    "Premium Performance, Competitive Cost.",
-    "Affordable Mods. Unbeatable Control.",
-    "Premium mod menu"
-  ];
+import { MessageSquare, Youtube } from "lucide-react";
 
+const Footer = () => {
   return (
     <footer className="bg-black border-t border-red-900/30 py-8">
       <div className="container mx-auto px-4">
@@ -16,16 +11,32 @@ const Footer = () => {
               src="/lovable-uploads/5d63c41f-2b65-4e10-b667-c1c5d3b8b6ad.png" 
               alt="Resolux Logo" 
               className="w-8 h-8"
+              loading="lazy"
+              width="32"
+              height="32"
             />
             <span className="text-xl font-bold text-white">Resolux</span>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-center md:text-right">
-            {slogans.map((slogan, index) => (
-              <div key={index} className="text-gray-400 text-sm">
-                {slogan}
-              </div>
-            ))}
+          <div className="flex items-center space-x-6">
+            <a 
+              href="https://discord.gg/resolux" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
+            >
+              <MessageSquare className="w-5 h-5" />
+              <span>Discord</span>
+            </a>
+            <a 
+              href="https://youtube.com/@resolux" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
+            >
+              <Youtube className="w-5 h-5" />
+              <span>YouTube</span>
+            </a>
           </div>
         </div>
         

@@ -1,6 +1,8 @@
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import PaymentStrip from "@/components/PaymentStrip";
+import Subscription from "@/components/Subscription";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -10,8 +12,7 @@ const HomePage = () => {
   const slogans = [
     "Dominate the Game, Not Your Wallet.",
     "Premium Performance, Competitive Cost.",
-    "Affordable Mods. Unbeatable Control.",
-    "Premium mod menu"
+    "Affordable Mods. Unbeatable Control."
   ];
 
   const features = [
@@ -33,7 +34,7 @@ const HomePage = () => {
     {
       icon: MessageSquare,
       title: "Community Support",
-      description: "Active community forum with dedicated support team."
+      description: "Active Discord community with dedicated support team."
     }
   ];
 
@@ -50,6 +51,9 @@ const HomePage = () => {
                 src="/lovable-uploads/5d63c41f-2b65-4e10-b667-c1c5d3b8b6ad.png" 
                 alt="Resolux Logo" 
                 className="w-20 h-20"
+                loading="eager"
+                width="80"
+                height="80"
               />
               <h1 className="text-6xl font-bold text-white">Resolux</h1>
             </div>
@@ -73,6 +77,15 @@ const HomePage = () => {
                   Join Community
                 </Button>
               </Link>
+              <a 
+                href="https://discord.gg/resolux" 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                <Button className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 text-lg font-medium">
+                  Join Discord
+                </Button>
+              </a>
               <Link to="/account">
                 <Button variant="outline" className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white px-8 py-3 text-lg font-medium">
                   View Account
@@ -95,6 +108,12 @@ const HomePage = () => {
           </div>
         </div>
       </div>
+      
+      {/* Subscription Section */}
+      <Subscription />
+      
+      {/* Payment Methods Strip */}
+      <PaymentStrip />
       
       <Footer />
     </div>
