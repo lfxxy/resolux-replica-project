@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,10 +52,10 @@ const ForumPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-gray-900 text-white flex flex-col">
       <Header />
       
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-6 flex-1">
         <div className="flex gap-6">
           {/* Sidebar */}
           <div className="w-64 space-y-4">
@@ -131,6 +132,8 @@ const ForumPage = () => {
           </div>
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 };
