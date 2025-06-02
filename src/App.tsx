@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import LoginPage from "./pages/LoginPage";
+import HomePage from "./pages/HomePage";
 import ForumPage from "./pages/ForumPage";
 import AccountPage from "./pages/AccountPage";
 import NotFound from "./pages/NotFound";
@@ -26,6 +27,11 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<LoginPage />} />
+            <Route path="/home" element={
+              <ProtectedRoute>
+                <HomePage />
+              </ProtectedRoute>
+            } />
             <Route path="/forum" element={
               <ProtectedRoute>
                 <ForumPage />

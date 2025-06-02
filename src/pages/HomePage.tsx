@@ -1,0 +1,104 @@
+
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { MessageSquare, User, Shield, Zap } from "lucide-react";
+
+const HomePage = () => {
+  const slogans = [
+    "Dominate the Game, Not Your Wallet.",
+    "Premium Performance, Competitive Cost.",
+    "Affordable Mods. Unbeatable Control.",
+    "Premium mod menu"
+  ];
+
+  const features = [
+    {
+      icon: Shield,
+      title: "Secure & Reliable",
+      description: "Advanced anti-detection technology keeps you safe while gaming."
+    },
+    {
+      icon: Zap,
+      title: "High Performance",
+      description: "Optimized code ensures smooth gameplay without frame drops."
+    },
+    {
+      icon: User,
+      title: "User Friendly",
+      description: "Intuitive interface designed for gamers of all skill levels."
+    },
+    {
+      icon: MessageSquare,
+      title: "Community Support",
+      description: "Active community forum with dedicated support team."
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-black text-white flex flex-col">
+      <Header />
+      
+      {/* Hero Section */}
+      <div className="flex-1 bg-gradient-to-br from-black via-gray-900 to-red-900/20">
+        <div className="container mx-auto px-4 py-16">
+          <div className="text-center mb-16">
+            <div className="flex items-center justify-center space-x-4 mb-8">
+              <img 
+                src="/lovable-uploads/5d63c41f-2b65-4e10-b667-c1c5d3b8b6ad.png" 
+                alt="Resolux Logo" 
+                className="w-20 h-20"
+              />
+              <h1 className="text-6xl font-bold text-white">Resolux</h1>
+            </div>
+            
+            <div className="space-y-4 mb-12">
+              {slogans.map((slogan, index) => (
+                <div key={index} className="text-2xl font-medium text-gray-300">
+                  {slogan}
+                </div>
+              ))}
+            </div>
+            
+            <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-8">
+              Experience the next generation of gaming enhancement with our professional-grade modification tools, 
+              designed for serious gamers who demand excellence without compromise.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/forum">
+                <Button className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 text-lg font-medium">
+                  Join Community
+                </Button>
+              </Link>
+              <Link to="/account">
+                <Button variant="outline" className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white px-8 py-3 text-lg font-medium">
+                  View Account
+                </Button>
+              </Link>
+            </div>
+          </div>
+          
+          {/* Features Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((feature, index) => (
+              <Card key={index} className="bg-gray-900 border-red-900/30 hover:border-red-700/50 transition-all duration-300">
+                <CardContent className="p-6 text-center">
+                  <feature.icon className="w-12 h-12 text-red-600 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
+                  <p className="text-gray-400">{feature.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+      
+      <Footer />
+    </div>
+  );
+};
+
+export default HomePage;

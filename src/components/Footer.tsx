@@ -8,7 +8,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-gray-900 border-t border-gray-800 py-8">
+    <footer className="bg-black border-t border-red-900/30 py-8">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between">
           <div className="flex items-center space-x-3 mb-4 md:mb-0">
@@ -29,7 +29,7 @@ const Footer = () => {
           </div>
         </div>
         
-        <div className="mt-6 pt-6 border-t border-gray-800 text-center text-gray-500 text-sm">
+        <div className="mt-6 pt-6 border-t border-red-900/30 text-center text-gray-500 text-sm">
           © 2024 Resolux. All rights reserved.
         </div>
       </div>

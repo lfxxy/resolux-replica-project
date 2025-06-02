@@ -1,11 +1,9 @@
-
 import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { MessageSquare, Users, Calendar, Pin } from "lucide-react";
 
 const ForumPage = () => {
@@ -52,14 +50,14 @@ const ForumPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col">
+    <div className="min-h-screen bg-black text-white flex flex-col">
       <Header />
       
       <div className="container mx-auto px-4 py-6 flex-1">
         <div className="flex gap-6">
           {/* Sidebar */}
           <div className="w-64 space-y-4">
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-gray-900 border-red-900/30">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg text-white">Navigation</CardTitle>
               </CardHeader>
@@ -71,7 +69,7 @@ const ForumPage = () => {
                     className={`w-full flex items-center gap-3 px-3 py-2 rounded text-left transition-colors ${
                       selectedCategory === category.id 
                         ? 'bg-red-600 text-white' 
-                        : 'text-gray-300 hover:bg-gray-700'
+                        : 'text-gray-300 hover:bg-gray-800'
                     }`}
                   >
                     <category.icon className="h-4 w-4" />
@@ -85,9 +83,9 @@ const ForumPage = () => {
           {/* Main Content */}
           <div className="flex-1 space-y-6">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">Forums</h1>
+              <h1 className="text-3xl font-bold text-white mb-2">Community Forums</h1>
               <p className="text-gray-400">
-                Connect with the Resolux community and discuss everything related to our products and services.
+                Connect with the Resolux community and discuss everything related to our premium gaming solutions.
               </p>
             </div>
 
@@ -95,24 +93,24 @@ const ForumPage = () => {
             <div className="flex gap-3">
               <Input 
                 placeholder="Search forums..." 
-                className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400"
+                className="bg-gray-900 border-red-900/30 text-white placeholder:text-gray-500 focus:border-red-600 focus:ring-red-600"
               />
               <Button className="bg-red-600 hover:bg-red-700">Search</Button>
             </div>
 
             {/* Forum Sections */}
             {forumSections.map((section, sectionIndex) => (
-              <Card key={sectionIndex} className="bg-gray-800 border-gray-700">
+              <Card key={sectionIndex} className="bg-gray-900 border-red-900/30">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg text-white">{section.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     {section.items.map((item, itemIndex) => (
-                      <div key={itemIndex} className="flex items-center justify-between p-3 rounded hover:bg-gray-700 transition-colors cursor-pointer">
+                      <div key={itemIndex} className="flex items-center justify-between p-3 rounded hover:bg-gray-800 transition-colors cursor-pointer">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-gray-600 rounded flex items-center justify-center">
-                            <item.icon className="h-4 w-4 text-gray-300" />
+                          <div className="w-8 h-8 bg-red-600/20 rounded flex items-center justify-center">
+                            <item.icon className="h-4 w-4 text-red-500" />
                           </div>
                           <div>
                             <h3 className="text-white font-medium">{item.name}</h3>

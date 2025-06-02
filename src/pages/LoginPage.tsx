@@ -18,16 +18,9 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const slogans = [
-    "Dominate the Game, Not Your Wallet.",
-    "Premium Performance, Competitive Cost.",
-    "Affordable Mods. Unbeatable Control.",
-    "Premium mod menu"
-  ];
-
   // Redirect if already authenticated
   if (isAuthenticated) {
-    navigate("/forum");
+    navigate("/home");
     return null;
   }
 
@@ -46,21 +39,21 @@ const LoginPage = () => {
 
       if (success) {
         toast({
-          title: "Success!",
-          description: isLogin ? "Logged in successfully" : "Account created successfully"
+          title: "Success",
+          description: isLogin ? "Welcome back to Resolux" : "Account created successfully"
         });
-        navigate("/forum");
+        navigate("/home");
       } else {
         toast({
-          title: "Error",
-          description: "Authentication failed",
+          title: "Authentication Failed",
+          description: "Please check your credentials and try again",
           variant: "destructive"
         });
       }
     } catch (error) {
       toast({
         title: "Error", 
-        description: "Something went wrong",
+        description: "An unexpected error occurred",
         variant: "destructive"
       });
     } finally {
@@ -69,63 +62,37 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-black flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background pattern */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black opacity-50"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-red-900 opacity-20"></div>
       
       {/* Animated background elements */}
       <div className="absolute inset-0">
-        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-red-500 rounded-full opacity-10 animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-24 h-24 bg-red-600 rounded-full opacity-10 animate-pulse delay-1000"></div>
+        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-red-600 rounded-full opacity-5 animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-24 h-24 bg-red-700 rounded-full opacity-5 animate-pulse delay-1000"></div>
       </div>
       
-      <div className="relative z-10 w-full max-w-6xl flex items-center justify-between">
-        {/* Left side - Branding */}
-        <div className="hidden lg:flex flex-col space-y-8 flex-1 pr-12">
-          <div className="flex items-center space-x-4">
+      <div className="relative z-10 w-full max-w-md">
+        {/* Logo and Brand */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="flex items-center space-x-4 mb-6">
             <img 
               src="/lovable-uploads/5d63c41f-2b65-4e10-b667-c1c5d3b8b6ad.png" 
               alt="Resolux Logo" 
-              className="w-20 h-20"
+              className="w-16 h-16"
             />
-            <h1 className="text-6xl font-bold text-white">
-              Resolux
-            </h1>
-          </div>
-          
-          <div className="space-y-4">
-            {slogans.map((slogan, index) => (
-              <div key={index} className="text-gray-300 text-lg font-medium">
-                {slogan}
-              </div>
-            ))}
-          </div>
-          
-          <div className="text-gray-400 text-sm">
-            Join thousands of gamers who trust Resolux for their gaming enhancement needs.
+            <h1 className="text-4xl font-bold text-white">Resolux</h1>
           </div>
         </div>
 
-        {/* Right side - Login Form */}
-        <Card className="w-full max-w-md bg-gray-800 border-gray-700">
+        {/* Login Form */}
+        <Card className="bg-gray-900 border-red-900/30 shadow-2xl">
           <CardHeader className="text-center">
-            <div className="lg:hidden flex items-center justify-center space-x-3 mb-4">
-              <img 
-                src="/lovable-uploads/5d63c41f-2b65-4e10-b667-c1c5d3b8b6ad.png" 
-                alt="Resolux Logo" 
-                className="w-12 h-12"
-              />
-              <CardTitle className="text-3xl font-bold text-white">
-                Resolux
-              </CardTitle>
-            </div>
-            {!window.innerWidth || window.innerWidth >= 1024 ? (
-              <CardTitle className="text-2xl font-bold text-white">
-                Welcome Back
-              </CardTitle>
-            ) : null}
+            <CardTitle className="text-2xl font-bold text-white">
+              {isLogin ? "Welcome Back" : "Create Account"}
+            </CardTitle>
             <CardDescription className="text-gray-400">
-              {isLogin ? "Sign in to your account" : "Create your account"}
+              {isLogin ? "Access your Resolux account" : "Join the Resolux community"}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -133,11 +100,11 @@ const LoginPage = () => {
               <div>
                 <Input
                   type="email"
-                  placeholder="Email"
+                  placeholder="Email Address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                  className="bg-black border-gray-700 text-white placeholder:text-gray-500 focus:border-red-600 focus:ring-red-600"
                 />
               </div>
               
@@ -149,7 +116,7 @@ const LoginPage = () => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
-                    className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                    className="bg-black border-gray-700 text-white placeholder:text-gray-500 focus:border-red-600 focus:ring-red-600"
                   />
                 </div>
               )}
@@ -161,26 +128,26 @@ const LoginPage = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                  className="bg-black border-gray-700 text-white placeholder:text-gray-500 focus:border-red-600 focus:ring-red-600"
                 />
               </div>
               
               <Button 
                 type="submit" 
-                className="w-full bg-red-600 hover:bg-red-700 text-white"
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-medium transition-all duration-200"
                 disabled={loading}
               >
-                {loading ? "Please wait..." : (isLogin ? "Sign In" : "Sign Up")}
+                {loading ? "Processing..." : (isLogin ? "Sign In" : "Create Account")}
               </Button>
             </form>
             
-            <div className="mt-4 text-center">
+            <div className="mt-6 text-center">
               <button
                 type="button"
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-red-500 hover:text-red-400 text-sm"
+                className="text-red-500 hover:text-red-400 text-sm font-medium transition-colors"
               >
-                {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+                {isLogin ? "Need an account? Sign up here" : "Already have an account? Sign in"}
               </button>
             </div>
           </CardContent>
