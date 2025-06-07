@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -5,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/contexts/AuthContext";
+import { useSubscriptions } from "@/hooks/useSubscriptions";
 import { 
   Settings, 
   Shield, 
@@ -21,6 +24,8 @@ import {
 
 const AccountPage = () => {
   const [selectedSection, setSelectedSection] = useState("general");
+  const { user, logout } = useAuth();
+  const { subscriptions, loading: subscriptionsLoading } = useSubscriptions();
 
   const menuItems = [
     { id: "general", name: "General", icon: Settings },
@@ -37,6 +42,22 @@ const AccountPage = () => {
     { id: "logout", name: "Logout", icon: LogOut },
   ];
 
+  const handleLogout = async () => {
+    if (selectedSection === "logout") {
+      await logout();
+    }
+  };
+
+  const activeSubscription = subscriptions.find(sub => sub.status === 'active');
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
   const renderContent = () => {
     switch (selectedSection) {
       case "general":
@@ -50,11 +71,19 @@ const AccountPage = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-1">Username</label>
-                    <Input className="bg-gray-700 border-gray-600 text-white" defaultValue="user123" />
+                    <Input 
+                      className="bg-gray-700 border-gray-600 text-white" 
+                      defaultValue={user?.username || ''} 
+                      placeholder="No username set"
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
-                    <Input className="bg-gray-700 border-gray-600 text-white" defaultValue="user@example.com" />
+                    <Input 
+                      className="bg-gray-700 border-gray-600 text-white" 
+                      defaultValue={user?.email || ''} 
+                      disabled
+                    />
                   </div>
                 </div>
                 <div>
@@ -73,16 +102,22 @@ const AccountPage = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-300">Subscription Status</span>
-                    <Badge className="bg-green-600">Active</Badge>
+                    <Badge className={activeSubscription ? "bg-green-600" : "bg-gray-600"}>
+                      {activeSubscription ? "Active" : "Inactive"}
+                    </Badge>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-300">Plan</span>
-                    <span className="text-white">Premium</span>
+                    <span className="text-white">
+                      {activeSubscription ? activeSubscription.plan_type : "No active plan"}
+                    </span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-300">Valid Until</span>
-                    <span className="text-white">March 15, 2024</span>
-                  </div>
+                  {activeSubscription && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-300">Valid Until</span>
+                      <span className="text-white">{formatDate(activeSubscription.expires_at)}</span>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -90,6 +125,21 @@ const AccountPage = () => {
         );
 
       case "subscriptions":
+        if (subscriptionsLoading) {
+          return (
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white">Active Subscriptions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin w-6 h-6 border-2 border-red-600 border-t-transparent rounded-full"></div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        }
+
         return (
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
@@ -97,25 +147,38 @@ const AccountPage = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="border border-gray-600 rounded-lg p-4">
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <h3 className="text-white font-semibold">Resolux Premium</h3>
-                      <p className="text-gray-400 text-sm">Full access to all features</p>
+                {subscriptions.length > 0 ? (
+                  subscriptions.map((subscription) => (
+                    <div key={subscription.id} className="border border-gray-600 rounded-lg p-4">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h3 className="text-white font-semibold">Resolux {subscription.plan_type}</h3>
+                          <p className="text-gray-400 text-sm">Full access to all features</p>
+                        </div>
+                        <Badge className={subscription.status === 'active' ? "bg-green-600" : "bg-gray-600"}>
+                          {subscription.status}
+                        </Badge>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-gray-400">Started:</span>
+                          <span className="text-white ml-2">{formatDate(subscription.started_at)}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Expires:</span>
+                          <span className="text-white ml-2">{formatDate(subscription.expires_at)}</span>
+                        </div>
+                      </div>
                     </div>
-                    <Badge className="bg-green-600">Active</Badge>
+                  ))
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-400">No active subscriptions</p>
+                    <Button className="bg-red-600 hover:bg-red-700 mt-4">
+                      Browse Plans
+                    </Button>
                   </div>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-gray-400">Started:</span>
-                      <span className="text-white ml-2">March 1, 2024</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-400">Expires:</span>
-                      <span className="text-white ml-2">March 1, 2025</span>
-                    </div>
-                  </div>
-                </div>
+                )}
                 <Button className="bg-red-600 hover:bg-red-700">Manage Subscription</Button>
               </div>
             </CardContent>
@@ -130,23 +193,28 @@ const AccountPage = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {[
-                  { id: "#RX001", product: "Resolux Premium", date: "March 1, 2024", amount: "$29.99", status: "Completed" },
-                  { id: "#RX002", product: "Hardware Reset", date: "February 15, 2024", amount: "$9.99", status: "Completed" },
-                ].map((purchase) => (
-                  <div key={purchase.id} className="border border-gray-600 rounded-lg p-4">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <h3 className="text-white font-medium">{purchase.product}</h3>
-                        <p className="text-gray-400 text-sm">{purchase.id} • {purchase.date}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-white font-semibold">{purchase.amount}</p>
-                        <Badge className="bg-green-600 text-xs">{purchase.status}</Badge>
+                {subscriptions.length > 0 ? (
+                  subscriptions.map((subscription) => (
+                    <div key={subscription.id} className="border border-gray-600 rounded-lg p-4">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <h3 className="text-white font-medium">Resolux {subscription.plan_type}</h3>
+                          <p className="text-gray-400 text-sm">
+                            {subscription.id.slice(0, 8)} • {formatDate(subscription.started_at)}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-white font-semibold">
+                            ${subscription.plan_type === 'monthly' ? '29.99' : '299.99'}
+                          </p>
+                          <Badge className="bg-green-600 text-xs">Completed</Badge>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="text-gray-400 text-center py-4">No purchase history available</p>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -180,7 +248,12 @@ const AccountPage = () => {
                   {menuItems.map((item) => (
                     <button
                       key={item.id}
-                      onClick={() => setSelectedSection(item.id)}
+                      onClick={() => {
+                        setSelectedSection(item.id);
+                        if (item.id === "logout") {
+                          handleLogout();
+                        }
+                      }}
                       className={`w-full flex items-center gap-3 px-3 py-2 rounded text-left transition-colors ${
                         selectedSection === item.id 
                           ? 'bg-red-600 text-white' 

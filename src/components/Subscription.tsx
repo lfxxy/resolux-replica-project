@@ -2,13 +2,21 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Crown, Zap, Infinity } from "lucide-react";
+import { useSubscriptions } from "@/hooks/useSubscriptions";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const Subscription = () => {
+  const { createSubscription } = useSubscriptions();
+  const { isAuthenticated } = useAuth();
+  const { toast } = useToast();
+
   const plans = [
     {
       name: "Weekly",
       price: "$4",
       duration: "7 days",
+      planType: "weekly",
       icon: Zap,
       features: ["Full access to all features", "Basic support", "Regular updates"],
       popular: false
@@ -17,6 +25,7 @@ const Subscription = () => {
       name: "Bi-Weekly",
       price: "$6",
       duration: "14 days",
+      planType: "biweekly",
       icon: Crown,
       features: ["Full access to all features", "Priority support", "Regular updates", "Early access to new features"],
       popular: true
@@ -25,6 +34,7 @@ const Subscription = () => {
       name: "Monthly",
       price: "$8",
       duration: "30 days",
+      planType: "monthly",
       icon: Crown,
       features: ["Full access to all features", "Priority support", "Regular updates", "Early access to new features", "Custom configurations"],
       popular: false
@@ -33,11 +43,53 @@ const Subscription = () => {
       name: "Lifetime",
       price: "$100",
       duration: "Forever",
+      planType: "lifetime",
       icon: Infinity,
       features: ["Full access to all features", "VIP support", "All future updates", "Early access to new features", "Custom configurations", "Priority feature requests"],
       popular: false
     }
   ];
+
+  const handlePurchase = async (plan: typeof plans[0]) => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to purchase a subscription",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Calculate expiration date
+    const now = new Date();
+    let expiresAt: Date;
+
+    switch (plan.planType) {
+      case "weekly":
+        expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+        break;
+      case "biweekly":
+        expiresAt = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+        break;
+      case "monthly":
+        expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+        break;
+      case "lifetime":
+        expiresAt = new Date(now.getTime() + 100 * 365 * 24 * 60 * 60 * 1000); // 100 years
+        break;
+      default:
+        expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+    }
+
+    const result = await createSubscription(plan.planType, expiresAt.toISOString());
+    
+    if (result) {
+      toast({
+        title: "Success!",
+        description: `${plan.name} subscription activated successfully!`
+      });
+    }
+  };
 
   return (
     <section className="py-16 bg-gradient-to-br from-black via-gray-900 to-red-900/20">
@@ -84,7 +136,10 @@ const Subscription = () => {
                   ))}
                 </ul>
                 
-                <Button className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 mt-6">
+                <Button 
+                  onClick={() => handlePurchase(plan)}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 mt-6"
+                >
                   Get Started
                 </Button>
               </CardContent>
