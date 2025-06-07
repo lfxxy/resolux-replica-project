@@ -29,7 +29,7 @@ export const useBasket = () => {
 
     try {
       const { data, error } = await supabase
-        .from('basket_items')
+        .from('basket_items' as any)
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
@@ -66,7 +66,7 @@ export const useBasket = () => {
       if (existingItem) {
         // Update quantity
         const { error } = await supabase
-          .from('basket_items')
+          .from('basket_items' as any)
           .update({ quantity: existingItem.quantity + 1 })
           .eq('id', existingItem.id);
 
@@ -82,7 +82,7 @@ export const useBasket = () => {
       } else {
         // Add new item
         const { error } = await supabase
-          .from('basket_items')
+          .from('basket_items' as any)
           .insert({
             user_id: user.id,
             product_name: productName,
@@ -116,7 +116,7 @@ export const useBasket = () => {
   const removeFromBasket = async (itemId: string) => {
     try {
       const { error } = await supabase
-        .from('basket_items')
+        .from('basket_items' as any)
         .delete()
         .eq('id', itemId);
 
@@ -149,7 +149,7 @@ export const useBasket = () => {
 
     try {
       const { error } = await supabase
-        .from('basket_items')
+        .from('basket_items' as any)
         .update({ quantity })
         .eq('id', itemId);
 
@@ -174,7 +174,7 @@ export const useBasket = () => {
 
     try {
       const { error } = await supabase
-        .from('basket_items')
+        .from('basket_items' as any)
         .delete()
         .eq('user_id', user.id);
 
