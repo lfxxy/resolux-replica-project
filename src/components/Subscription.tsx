@@ -1,20 +1,23 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check, Crown, Zap, Infinity } from "lucide-react";
+import { Check, Crown, Zap, Infinity, ShoppingCart } from "lucide-react";
 import { useSubscriptions } from "@/hooks/useSubscriptions";
+import { useBasket } from "@/hooks/useBasket";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
 const Subscription = () => {
   const { createSubscription } = useSubscriptions();
+  const { addToBasket } = useBasket();
   const { isAuthenticated } = useAuth();
   const { toast } = useToast();
 
   const plans = [
     {
       name: "Weekly",
-      price: "$4",
+      price: "$4.99",
+      priceInCents: 499,
       duration: "7 days",
       planType: "weekly",
       icon: Zap,
@@ -23,7 +26,8 @@ const Subscription = () => {
     },
     {
       name: "Bi-Weekly",
-      price: "$6",
+      price: "$7.99",
+      priceInCents: 799,
       duration: "14 days",
       planType: "biweekly",
       icon: Crown,
@@ -32,7 +36,8 @@ const Subscription = () => {
     },
     {
       name: "Monthly",
-      price: "$8",
+      price: "$12.99",
+      priceInCents: 1299,
       duration: "30 days",
       planType: "monthly",
       icon: Crown,
@@ -41,7 +46,8 @@ const Subscription = () => {
     },
     {
       name: "Lifetime",
-      price: "$100",
+      price: "$199.99",
+      priceInCents: 19999,
       duration: "Forever",
       planType: "lifetime",
       icon: Infinity,
@@ -50,7 +56,24 @@ const Subscription = () => {
     }
   ];
 
-  const handlePurchase = async (plan: typeof plans[0]) => {
+  const handleAddToBasket = async (plan: typeof plans[0]) => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to add items to your basket",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    await addToBasket(
+      `Resolux ${plan.name} Subscription`,
+      "subscription",
+      plan.priceInCents
+    );
+  };
+
+  const handleDirectPurchase = async (plan: typeof plans[0]) => {
     if (!isAuthenticated) {
       toast({
         title: "Authentication Required",
@@ -136,12 +159,22 @@ const Subscription = () => {
                   ))}
                 </ul>
                 
-                <Button 
-                  onClick={() => handlePurchase(plan)}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 mt-6"
-                >
-                  Get Started
-                </Button>
+                <div className="space-y-2">
+                  <Button 
+                    onClick={() => handleDirectPurchase(plan)}
+                    className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3"
+                  >
+                    Buy Now
+                  </Button>
+                  <Button 
+                    onClick={() => handleAddToBasket(plan)}
+                    variant="outline"
+                    className="w-full border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-medium py-3"
+                  >
+                    <ShoppingCart className="w-4 h-4 mr-2" />
+                    Add to Basket
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))}

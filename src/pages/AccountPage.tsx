@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -8,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscriptions } from "@/hooks/useSubscriptions";
+import SecuritySection from "@/components/SecuritySection";
+import ProfilePicture from "@/components/ProfilePicture";
 import { 
   Settings, 
   Shield, 
@@ -19,7 +20,8 @@ import {
   Gift, 
   Monitor, 
   Download,
-  LogOut
+  LogOut,
+  ShoppingCart
 } from "lucide-react";
 
 const AccountPage = () => {
@@ -68,22 +70,25 @@ const AccountPage = () => {
                 <CardTitle className="text-white">Profile Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Username</label>
-                    <Input 
-                      className="bg-gray-700 border-gray-600 text-white" 
-                      defaultValue={user?.username || ''} 
-                      placeholder="No username set"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
-                    <Input 
-                      className="bg-gray-700 border-gray-600 text-white" 
-                      defaultValue={user?.email || ''} 
-                      disabled
-                    />
+                <div className="flex items-start gap-6">
+                  <ProfilePicture size="lg" showUpload={true} />
+                  <div className="flex-1 grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Username</label>
+                      <Input 
+                        className="bg-gray-700 border-gray-600 text-white" 
+                        defaultValue={user?.username || ''} 
+                        placeholder="No username set"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                      <Input 
+                        className="bg-gray-700 border-gray-600 text-white" 
+                        defaultValue={user?.email || ''} 
+                        disabled
+                      />
+                    </div>
                   </div>
                 </div>
                 <div>
@@ -123,6 +128,9 @@ const AccountPage = () => {
             </Card>
           </div>
         );
+
+      case "security":
+        return <SecuritySection />;
 
       case "subscriptions":
         if (subscriptionsLoading) {

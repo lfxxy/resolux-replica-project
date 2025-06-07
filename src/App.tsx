@@ -9,6 +9,7 @@ import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
 import ForumPage from "./pages/ForumPage";
 import AccountPage from "./pages/AccountPage";
+import BasketPage from "./pages/BasketPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -63,6 +64,11 @@ const AppRoutes = () => {
       <Route path="/account" element={
         <ProtectedRoute>
           <AccountPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/basket" element={
+        <ProtectedRoute>
+          <BasketPage />
         </ProtectedRoute>
       } />
       <Route path="*" element={<NotFound />} />

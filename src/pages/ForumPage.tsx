@@ -5,14 +5,14 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MessageSquare, Users, Calendar, Pin } from "lucide-react";
+import { MessageSquare, Users, Calendar, Pin, AlertCircle } from "lucide-react";
 import { useForums } from "@/hooks/useForums";
 import { Badge } from "@/components/ui/badge";
 
 const ForumPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const { categories, threads, loading } = useForums();
+  const { categories, threads, loading, error } = useForums();
 
   const categoryMenuItems = [
     { id: "all", name: "All threads", icon: MessageSquare },
@@ -68,6 +68,30 @@ const ForumPage = () => {
             <div className="animate-spin w-8 h-8 border-2 border-red-600 border-t-transparent rounded-full mx-auto mb-4"></div>
             <p className="text-gray-400">Loading forums...</p>
           </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-black text-white flex flex-col">
+        <Header />
+        <div className="container mx-auto px-4 py-6 flex-1 flex items-center justify-center">
+          <Card className="bg-gray-900 border-red-900/30 max-w-md">
+            <CardContent className="text-center py-8">
+              <AlertCircle className="w-16 h-16 text-red-600 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-2">Unable to Load Forums</h3>
+              <p className="text-gray-400 mb-6">{error}</p>
+              <Button 
+                onClick={() => window.location.reload()} 
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Try Again
+              </Button>
+            </CardContent>
+          </Card>
         </div>
         <Footer />
       </div>

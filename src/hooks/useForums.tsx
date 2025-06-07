@@ -23,7 +23,7 @@ interface ForumThread {
   updated_at: string;
   profiles: {
     username: string;
-  };
+  } | null;
 }
 
 interface ForumPost {
@@ -34,7 +34,7 @@ interface ForumPost {
   created_at: string;
   profiles: {
     username: string;
-  };
+  } | null;
 }
 
 export const useForums = () => {
@@ -42,6 +42,7 @@ export const useForums = () => {
   const [threads, setThreads] = useState<ForumThread[]>([]);
   const [posts, setPosts] = useState<ForumPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -54,12 +55,14 @@ export const useForums = () => {
 
       if (error) {
         console.error('Error fetching categories:', error);
+        setError(error.message);
         return;
       }
 
       setCategories(data || []);
     } catch (error) {
       console.error('Error fetching categories:', error);
+      setError('Failed to load categories');
     }
   };
 
@@ -82,12 +85,14 @@ export const useForums = () => {
 
       if (error) {
         console.error('Error fetching threads:', error);
+        setError(error.message);
         return;
       }
 
       setThreads(data || []);
     } catch (error) {
       console.error('Error fetching threads:', error);
+      setError('Failed to load threads');
     } finally {
       setLoading(false);
     }
@@ -106,12 +111,14 @@ export const useForums = () => {
 
       if (error) {
         console.error('Error fetching posts:', error);
+        setError(error.message);
         return;
       }
 
       setPosts(data || []);
     } catch (error) {
       console.error('Error fetching posts:', error);
+      setError('Failed to load posts');
     }
   };
 
@@ -205,8 +212,14 @@ export const useForums = () => {
   };
 
   useEffect(() => {
-    fetchCategories();
-    fetchThreads();
+    const loadData = async () => {
+      setLoading(true);
+      setError(null);
+      await fetchCategories();
+      await fetchThreads();
+    };
+    
+    loadData();
   }, []);
 
   return {
@@ -214,6 +227,7 @@ export const useForums = () => {
     threads,
     posts,
     loading,
+    error,
     fetchCategories,
     fetchThreads,
     fetchPosts,
