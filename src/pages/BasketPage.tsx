@@ -9,7 +9,7 @@ import { ShoppingCart, Trash2, Plus, Minus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 const BasketPage = () => {
-  const { items, loading, removeFromBasket, updateQuantity, getTotalPrice } = useBasket();
+  const { items, loading, total, removeFromBasket, updateQuantity } = useBasket();
 
   const formatPrice = (price: number) => {
     return `$${(price / 100).toFixed(2)}`;
@@ -132,7 +132,7 @@ const BasketPage = () => {
                 <CardContent className="space-y-4">
                   <div className="flex justify-between text-gray-400">
                     <span>Subtotal</span>
-                    <span>{formatPrice(getTotalPrice())}</span>
+                    <span>{formatPrice(total)}</span>
                   </div>
                   <div className="flex justify-between text-gray-400">
                     <span>Tax</span>
@@ -141,7 +141,7 @@ const BasketPage = () => {
                   <div className="border-t border-gray-700 pt-4">
                     <div className="flex justify-between text-white font-semibold text-lg">
                       <span>Total</span>
-                      <span>{formatPrice(getTotalPrice())}</span>
+                      <span>{formatPrice(total)}</span>
                     </div>
                   </div>
                   <Button 
