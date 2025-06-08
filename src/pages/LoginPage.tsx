@@ -44,9 +44,14 @@ const LoginPage = () => {
         });
         navigate("/home");
       } else {
+        // Show specific error message for email confirmation
+        const errorMessage = isLogin 
+          ? "Login failed. If you just created your account, please check your email and click the confirmation link first. You can also disable email confirmation in Supabase settings for testing."
+          : "Account creation failed. Please try again.";
+          
         toast({
           title: "Authentication Failed",
-          description: "Please check your credentials and try again",
+          description: errorMessage,
           variant: "destructive"
         });
       }
@@ -140,6 +145,14 @@ const LoginPage = () => {
                 {loading ? "Processing..." : (isLogin ? "Sign In" : "Create Account")}
               </Button>
             </form>
+            
+            {isLogin && (
+              <div className="mt-4 p-3 bg-gray-800 border border-gray-700 rounded-md">
+                <p className="text-xs text-gray-400">
+                  <strong>Note:</strong> If you just created an account, check your email for a confirmation link before logging in.
+                </p>
+              </div>
+            )}
             
             <div className="mt-6 text-center">
               <button
