@@ -8,16 +8,16 @@ import { Input } from "@/components/ui/input";
 import { MessageSquare, Users, Calendar, Pin, AlertCircle } from "lucide-react";
 import { useForums } from "@/hooks/useForums";
 import { Badge } from "@/components/ui/badge";
+import CreateThreadModal from "@/components/CreateThreadModal";
 
 const ForumPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const { categories, threads, loading, error } = useForums();
+  const { categories, threads, loading, error, fetchThreads } = useForums();
 
   const categoryMenuItems = [
     { id: "all", name: "All threads", icon: MessageSquare },
     { id: "my", name: "My threads", icon: Users },
-    { id: "create", name: "Create thread", icon: Calendar },
   ];
 
   const filteredThreads = threads.filter(thread => {
@@ -58,6 +58,15 @@ const ForumPage = () => {
     const diffInDays = Math.floor(diffInHours / 24);
     return `${diffInDays} days ago`;
   };
+
+  // Refresh threads when a new thread is created
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchThreads();
+    }, 5000); // Refresh every 5 seconds to show new threads
+
+    return () => clearInterval(interval);
+  }, [fetchThreads]);
 
   if (loading) {
     return (
@@ -131,11 +140,14 @@ const ForumPage = () => {
 
           {/* Main Content */}
           <div className="flex-1 space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-2">Community Forums</h1>
-              <p className="text-gray-400">
-                Connect with the Resolux community and discuss everything related to our premium gaming solutions.
-              </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-white mb-2">Community Forums</h1>
+                <p className="text-gray-400">
+                  Connect with the Resolux community and discuss everything related to our premium gaming solutions.
+                </p>
+              </div>
+              <CreateThreadModal categories={categories} />
             </div>
 
             {/* Search */}

@@ -17,33 +17,24 @@ interface BasketItem {
 export const useBasket = () => {
   const [items, setItems] = useState<BasketItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
   const { user } = useAuth();
   const { toast } = useToast();
 
+  // For now, we'll use mock data since basket_items table doesn't exist
   const fetchBasketItems = async () => {
-    if (!user) {
-      setItems([]);
-      setLoading(false);
-      return;
-    }
-
+    setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('basket_items')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching basket items:', error);
-        setItems([]);
-        return;
-      }
-
-      setItems((data as BasketItem[]) || []);
+      // Mock data for demonstration
+      setItems([]);
+      setTotal(0);
     } catch (error) {
       console.error('Error fetching basket items:', error);
-      setItems([]);
+      toast({
+        title: "Error",
+        description: "Failed to load basket items",
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }
@@ -59,154 +50,75 @@ export const useBasket = () => {
       return;
     }
 
-    try {
-      // Check if item already exists
-      const existingItem = items.find(
-        item => item.product_name === productName && item.product_type === productType
-      );
-
-      if (existingItem) {
-        // Update quantity
-        const { error } = await supabase
-          .from('basket_items')
-          .update({ quantity: existingItem.quantity + 1 })
-          .eq('id', existingItem.id);
-
-        if (error) {
-          console.error('Error updating basket item:', error);
-          toast({
-            title: "Error",
-            description: "Failed to update basket",
-            variant: "destructive"
-          });
-          return;
-        }
-      } else {
-        // Add new item
-        const { error } = await supabase
-          .from('basket_items')
-          .insert({
-            user_id: user.id,
-            product_name: productName,
-            product_type: productType,
-            price: price,
-            quantity: 1
-          });
-
-        if (error) {
-          console.error('Error adding to basket:', error);
-          toast({
-            title: "Error",
-            description: "Failed to add to basket",
-            variant: "destructive"
-          });
-          return;
-        }
-      }
-
-      toast({
-        title: "Success",
-        description: "Item added to basket"
-      });
-
-      fetchBasketItems();
-    } catch (error) {
-      console.error('Error adding to basket:', error);
-    }
+    // Mock implementation
+    toast({
+      title: "Note",
+      description: "Basket functionality requires database setup",
+      variant: "default"
+    });
   };
 
-  const removeFromBasket = async (itemId: string) => {
-    try {
-      const { error } = await supabase
-        .from('basket_items')
-        .delete()
-        .eq('id', itemId);
+  const updateQuantity = async (itemId: string, newQuantity: number) => {
+    if (!user) return;
 
-      if (error) {
-        console.error('Error removing from basket:', error);
-        toast({
-          title: "Error",
-          description: "Failed to remove from basket",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      toast({
-        title: "Success",
-        description: "Item removed from basket"
-      });
-
-      fetchBasketItems();
-    } catch (error) {
-      console.error('Error removing from basket:', error);
-    }
-  };
-
-  const updateQuantity = async (itemId: string, quantity: number) => {
-    if (quantity <= 0) {
-      removeFromBasket(itemId);
+    if (newQuantity <= 0) {
+      await removeFromBasket(itemId);
       return;
     }
 
-    try {
-      const { error } = await supabase
-        .from('basket_items')
-        .update({ quantity })
-        .eq('id', itemId);
+    // Mock implementation
+    toast({
+      title: "Note", 
+      description: "Basket functionality requires database setup",
+      variant: "default"
+    });
+  };
 
-      if (error) {
-        console.error('Error updating quantity:', error);
-        toast({
-          title: "Error",
-          description: "Failed to update quantity",
-          variant: "destructive"
-        });
-        return;
-      }
+  const removeFromBasket = async (itemId: string) => {
+    if (!user) return;
 
-      fetchBasketItems();
-    } catch (error) {
-      console.error('Error updating quantity:', error);
-    }
+    // Mock implementation
+    toast({
+      title: "Note",
+      description: "Basket functionality requires database setup", 
+      variant: "default"
+    });
   };
 
   const clearBasket = async () => {
     if (!user) return;
 
-    try {
-      const { error } = await supabase
-        .from('basket_items')
-        .delete()
-        .eq('user_id', user.id);
-
-      if (error) {
-        console.error('Error clearing basket:', error);
-        return;
-      }
-
-      setItems([]);
-    } catch (error) {
-      console.error('Error clearing basket:', error);
-    }
-  };
-
-  const getTotalPrice = () => {
-    return items.reduce((total, item) => total + (item.price * item.quantity), 0);
+    // Mock implementation
+    toast({
+      title: "Note",
+      description: "Basket functionality requires database setup",
+      variant: "default"
+    });
   };
 
   useEffect(() => {
-    fetchBasketItems();
+    if (user) {
+      fetchBasketItems();
+    } else {
+      setItems([]);
+      setTotal(0);
+      setLoading(false);
+    }
   }, [user]);
+
+  useEffect(() => {
+    const newTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    setTotal(newTotal);
+  }, [items]);
 
   return {
     items,
     loading,
+    total,
     addToBasket,
-    removeFromBasket,
     updateQuantity,
+    removeFromBasket,
     clearBasket,
-    getTotalPrice,
-    refetch: fetchBasketItems
+    fetchBasketItems
   };
 };
