@@ -1,5 +1,4 @@
 
-import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useBasket } from "@/hooks/useBasket";
 import { ShoppingCart, Trash2, Plus, Minus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 
 const BasketPage = () => {
   const { items, loading, total, removeFromBasket, updateQuantity } = useBasket();
@@ -16,8 +16,8 @@ const BasketPage = () => {
   };
 
   const handleCheckout = () => {
-    // This will be implemented with Stripe integration
     console.log("Proceeding to checkout...");
+    // This will be implemented with Stripe integration
   };
 
   if (loading) {
@@ -56,9 +56,11 @@ const BasketPage = () => {
               <ShoppingCart className="w-16 h-16 text-gray-600 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-white mb-2">Your basket is empty</h3>
               <p className="text-gray-400 mb-6">Add some items to get started!</p>
-              <Button className="bg-red-600 hover:bg-red-700">
-                Browse Products
-              </Button>
+              <Link to="/home#subscriptions">
+                <Button className="bg-red-600 hover:bg-red-700">
+                  Browse Plans
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         ) : (

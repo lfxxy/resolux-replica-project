@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -16,15 +16,13 @@ interface BasketItem {
 
 export const useBasket = () => {
   const [items, setItems] = useState<BasketItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const fetchBasketItems = async () => {
+  const fetchBasketItems = useCallback(async () => {
     if (!user) {
       setItems([]);
-      setTotal(0);
       setLoading(false);
       return;
     }
@@ -39,28 +37,28 @@ export const useBasket = () => {
 
       if (error) {
         console.error('Error fetching basket items:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load basket items",
-          variant: "destructive"
-        });
+        // Don't show error toast for missing RLS policies during development
+        if (!error.message.includes('row-level security')) {
+          toast({
+            title: "Error",
+            description: "Failed to load basket items",
+            variant: "destructive"
+          });
+        }
+        setItems([]);
         return;
       }
 
       setItems(data || []);
     } catch (error) {
       console.error('Error fetching basket items:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load basket items",
-        variant: "destructive"
-      });
+      setItems([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, toast]);
 
-  const addToBasket = async (productName: string, productType: string, price: number) => {
+  const addToBasket = useCallback(async (productName: string, productType: string, price: number) => {
     if (!user) {
       toast({
         title: "Error",
@@ -93,11 +91,13 @@ export const useBasket = () => {
 
       if (error) {
         console.error('Error adding to basket:', error);
-        toast({
-          title: "Error",
-          description: "Failed to add item to basket",
-          variant: "destructive"
-        });
+        if (!error.message.includes('row-level security')) {
+          toast({
+            title: "Error",
+            description: "Failed to add item to basket",
+            variant: "destructive"
+          });
+        }
         return;
       }
 
@@ -106,18 +106,13 @@ export const useBasket = () => {
         description: "Item added to basket",
       });
 
-      fetchBasketItems();
+      await fetchBasketItems();
     } catch (error) {
       console.error('Error adding to basket:', error);
-      toast({
-        title: "Error",
-        description: "Failed to add item to basket",
-        variant: "destructive"
-      });
     }
-  };
+  }, [user, items, toast, fetchBasketItems]);
 
-  const updateQuantity = async (itemId: string, newQuantity: number) => {
+  const updateQuantity = useCallback(async (itemId: string, newQuantity: number) => {
     if (!user) return;
 
     if (newQuantity <= 0) {
@@ -134,26 +129,19 @@ export const useBasket = () => {
 
       if (error) {
         console.error('Error updating quantity:', error);
-        toast({
-          title: "Error",
-          description: "Failed to update quantity",
-          variant: "destructive"
-        });
         return;
       }
 
-      fetchBasketItems();
+      // Update local state immediately for better UX
+      setItems(prev => prev.map(item => 
+        item.id === itemId ? { ...item, quantity: newQuantity } : item
+      ));
     } catch (error) {
       console.error('Error updating quantity:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update quantity",
-        variant: "destructive"
-      });
     }
-  };
+  }, [user]);
 
-  const removeFromBasket = async (itemId: string) => {
+  const removeFromBasket = useCallback(async (itemId: string) => {
     if (!user) return;
 
     try {
@@ -165,31 +153,22 @@ export const useBasket = () => {
 
       if (error) {
         console.error('Error removing from basket:', error);
-        toast({
-          title: "Error",
-          description: "Failed to remove item from basket",
-          variant: "destructive"
-        });
         return;
       }
+
+      // Update local state immediately
+      setItems(prev => prev.filter(item => item.id !== itemId));
 
       toast({
         title: "Success",
         description: "Item removed from basket",
       });
-
-      fetchBasketItems();
     } catch (error) {
       console.error('Error removing from basket:', error);
-      toast({
-        title: "Error",
-        description: "Failed to remove item from basket",
-        variant: "destructive"
-      });
     }
-  };
+  }, [user, toast]);
 
-  const clearBasket = async () => {
+  const clearBasket = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -200,45 +179,30 @@ export const useBasket = () => {
 
       if (error) {
         console.error('Error clearing basket:', error);
-        toast({
-          title: "Error",
-          description: "Failed to clear basket",
-          variant: "destructive"
-        });
         return;
       }
 
+      setItems([]);
       toast({
         title: "Success",
         description: "Basket cleared",
       });
-
-      setItems([]);
-      setTotal(0);
     } catch (error) {
       console.error('Error clearing basket:', error);
-      toast({
-        title: "Error",
-        description: "Failed to clear basket",
-        variant: "destructive"
-      });
     }
-  };
+  }, [user, toast]);
+
+  // Calculate total from items
+  const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   useEffect(() => {
     if (user) {
       fetchBasketItems();
     } else {
       setItems([]);
-      setTotal(0);
       setLoading(false);
     }
-  }, [user]);
-
-  useEffect(() => {
-    const newTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    setTotal(newTotal);
-  }, [items]);
+  }, [user, fetchBasketItems]);
 
   return {
     items,

@@ -2,10 +2,15 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
+import { ShoppingCart } from "lucide-react";
+import { useBasket } from "@/hooks/useBasket";
 
 const Header = () => {
   const { logout } = useAuth();
   const location = useLocation();
+  const { items } = useBasket();
+
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <header className="bg-black border-b border-red-900/30">
@@ -58,13 +63,30 @@ const Header = () => {
             </a>
           </nav>
         </div>
-        <Button 
-          onClick={logout}
-          variant="outline"
-          className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white"
-        >
-          Logout
-        </Button>
+        
+        <div className="flex items-center space-x-4">
+          <Link 
+            to="/basket"
+            className={`relative text-gray-300 hover:text-white transition-colors ${
+              location.pathname === '/basket' ? 'text-red-500' : ''
+            }`}
+          >
+            <ShoppingCart className="w-6 h-6" />
+            {itemCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {itemCount}
+              </span>
+            )}
+          </Link>
+          
+          <Button 
+            onClick={logout}
+            variant="outline"
+            className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white"
+          >
+            Logout
+          </Button>
+        </div>
       </div>
     </header>
   );
