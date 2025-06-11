@@ -16,8 +16,9 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+      refetchOnWindowFocus: false,
     },
   },
 });
@@ -38,7 +39,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <LoadingSpinner />;
   }
   
-  return isAuthenticated ? <>{children}</> : <Navigate to="/" />;
+  return isAuthenticated ? <>{children}</> : <Navigate to="/" replace />;
 };
 
 const AppRoutes = () => {
@@ -52,7 +53,7 @@ const AppRoutes = () => {
     <Routes>
       <Route 
         path="/" 
-        element={isAuthenticated ? <Navigate to="/home" /> : <LoginPage />} 
+        element={isAuthenticated ? <Navigate to="/home" replace /> : <LoginPage />} 
       />
       <Route path="/home" element={
         <ProtectedRoute>
