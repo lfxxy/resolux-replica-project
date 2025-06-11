@@ -21,13 +21,33 @@ export const useBasket = () => {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  // For now, we'll use mock data since basket_items table doesn't exist
   const fetchBasketItems = async () => {
-    setLoading(true);
-    try {
-      // Mock data for demonstration
+    if (!user) {
       setItems([]);
       setTotal(0);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('basket_items')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching basket items:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load basket items",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setItems(data || []);
     } catch (error) {
       console.error('Error fetching basket items:', error);
       toast({
@@ -50,12 +70,51 @@ export const useBasket = () => {
       return;
     }
 
-    // Mock implementation
-    toast({
-      title: "Note",
-      description: "Basket functionality requires database setup",
-      variant: "default"
-    });
+    try {
+      // Check if item already exists
+      const existingItem = items.find(
+        item => item.product_name === productName && item.product_type === productType
+      );
+
+      if (existingItem) {
+        await updateQuantity(existingItem.id, existingItem.quantity + 1);
+        return;
+      }
+
+      const { error } = await supabase
+        .from('basket_items')
+        .insert({
+          user_id: user.id,
+          product_name: productName,
+          product_type: productType,
+          price: price,
+          quantity: 1
+        });
+
+      if (error) {
+        console.error('Error adding to basket:', error);
+        toast({
+          title: "Error",
+          description: "Failed to add item to basket",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "Item added to basket",
+      });
+
+      fetchBasketItems();
+    } catch (error) {
+      console.error('Error adding to basket:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add item to basket",
+        variant: "destructive"
+      });
+    }
   };
 
   const updateQuantity = async (itemId: string, newQuantity: number) => {
@@ -66,34 +125,104 @@ export const useBasket = () => {
       return;
     }
 
-    // Mock implementation
-    toast({
-      title: "Note", 
-      description: "Basket functionality requires database setup",
-      variant: "default"
-    });
+    try {
+      const { error } = await supabase
+        .from('basket_items')
+        .update({ quantity: newQuantity })
+        .eq('id', itemId)
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error updating quantity:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update quantity",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      fetchBasketItems();
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update quantity",
+        variant: "destructive"
+      });
+    }
   };
 
   const removeFromBasket = async (itemId: string) => {
     if (!user) return;
 
-    // Mock implementation
-    toast({
-      title: "Note",
-      description: "Basket functionality requires database setup", 
-      variant: "default"
-    });
+    try {
+      const { error } = await supabase
+        .from('basket_items')
+        .delete()
+        .eq('id', itemId)
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error removing from basket:', error);
+        toast({
+          title: "Error",
+          description: "Failed to remove item from basket",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "Item removed from basket",
+      });
+
+      fetchBasketItems();
+    } catch (error) {
+      console.error('Error removing from basket:', error);
+      toast({
+        title: "Error",
+        description: "Failed to remove item from basket",
+        variant: "destructive"
+      });
+    }
   };
 
   const clearBasket = async () => {
     if (!user) return;
 
-    // Mock implementation
-    toast({
-      title: "Note",
-      description: "Basket functionality requires database setup",
-      variant: "default"
-    });
+    try {
+      const { error } = await supabase
+        .from('basket_items')
+        .delete()
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error clearing basket:', error);
+        toast({
+          title: "Error",
+          description: "Failed to clear basket",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "Basket cleared",
+      });
+
+      setItems([]);
+      setTotal(0);
+    } catch (error) {
+      console.error('Error clearing basket:', error);
+      toast({
+        title: "Error",
+        description: "Failed to clear basket",
+        variant: "destructive"
+      });
+    }
   };
 
   useEffect(() => {

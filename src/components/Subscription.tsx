@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check, Crown, Zap, Infinity, ShoppingCart } from "lucide-react";
+import { Check, Crown, Zap, Infinity, ShoppingCart, CreditCard } from "lucide-react";
 import { useSubscriptions } from "@/hooks/useSubscriptions";
 import { useBasket } from "@/hooks/useBasket";
 import { useAuth } from "@/contexts/AuthContext";
@@ -73,7 +73,7 @@ const Subscription = () => {
     );
   };
 
-  const handleDirectPurchase = async (plan: typeof plans[0]) => {
+  const handleStripeCheckout = async (plan: typeof plans[0]) => {
     if (!isAuthenticated) {
       toast({
         title: "Authentication Required",
@@ -83,45 +83,27 @@ const Subscription = () => {
       return;
     }
 
-    // Calculate expiration date
-    const now = new Date();
-    let expiresAt: Date;
-
-    switch (plan.planType) {
-      case "weekly":
-        expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-        break;
-      case "biweekly":
-        expiresAt = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
-        break;
-      case "monthly":
-        expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-        break;
-      case "lifetime":
-        expiresAt = new Date(now.getTime() + 100 * 365 * 24 * 60 * 60 * 1000); // 100 years
-        break;
-      default:
-        expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-    }
-
-    const result = await createSubscription(plan.planType, expiresAt.toISOString());
-    
-    if (result) {
-      toast({
-        title: "Success!",
-        description: `${plan.name} subscription activated successfully!`
-      });
-    }
+    // This will be implemented with Stripe integration
+    toast({
+      title: "Coming Soon",
+      description: "Stripe integration is being set up. Please add items to basket for now.",
+      variant: "default"
+    });
   };
 
   return (
-    <section className="py-16 bg-gradient-to-br from-black via-gray-900 to-red-900/20">
+    <section id="subscriptions" className="py-16 bg-gradient-to-br from-black via-gray-900 to-red-900/20">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-white mb-4">Choose Your Plan</h2>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto">
             Get premium access to Resolux and dominate your gaming experience
           </p>
+          <div className="mt-6 p-4 bg-red-900/20 border border-red-600/30 rounded-lg max-w-md mx-auto">
+            <p className="text-red-400 text-sm">
+              🚀 Stripe payment integration coming soon! Add items to basket for now.
+            </p>
+          </div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
@@ -161,10 +143,11 @@ const Subscription = () => {
                 
                 <div className="space-y-2">
                   <Button 
-                    onClick={() => handleDirectPurchase(plan)}
+                    onClick={() => handleStripeCheckout(plan)}
                     className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3"
                   >
-                    Buy Now
+                    <CreditCard className="w-4 h-4 mr-2" />
+                    Buy with Stripe
                   </Button>
                   <Button 
                     onClick={() => handleAddToBasket(plan)}
