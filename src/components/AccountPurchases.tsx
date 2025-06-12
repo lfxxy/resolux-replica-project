@@ -14,6 +14,21 @@ const AccountPurchases = () => {
     });
   };
 
+  const getPlanPrice = (planType: string) => {
+    switch (planType) {
+      case 'weekly':
+        return '$3.99';
+      case 'biweekly':
+        return '$5.99';
+      case 'monthly':
+        return '$9.99';
+      case 'yearly':
+        return '$99.99';
+      default:
+        return '$0.00';
+    }
+  };
+
   return (
     <Card className="bg-gray-800 border-gray-700">
       <CardHeader>
@@ -33,7 +48,7 @@ const AccountPurchases = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-white font-semibold">
-                      ${subscription.plan_type === 'monthly' ? '29.99' : '299.99'}
+                      {getPlanPrice(subscription.plan_type)}
                     </p>
                     <Badge className="bg-green-600 text-xs">Completed</Badge>
                   </div>

@@ -3,9 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useSubscriptions } from "@/hooks/useSubscriptions";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const AccountSubscriptions = () => {
-  const { subscriptions, loading: subscriptionsLoading } = useSubscriptions();
+  const { subscriptions, loading: subscriptionsLoading, refetch } = useSubscriptions();
+  const { toast } = useToast();
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -13,6 +16,62 @@ const AccountSubscriptions = () => {
       month: 'long',
       day: 'numeric'
     });
+  };
+
+  const handleManageSubscription = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('customer-portal');
+
+      if (error) {
+        console.error('Customer portal error:', error);
+        toast({
+          title: "Error",
+          description: "Failed to open subscription management. Please try again.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Customer portal error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to open subscription management. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleRefreshStatus = async () => {
+    try {
+      const { error } = await supabase.functions.invoke('check-subscription');
+      
+      if (error) {
+        console.error('Check subscription error:', error);
+        toast({
+          title: "Error",
+          description: "Failed to refresh subscription status.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      await refetch();
+      toast({
+        title: "Success",
+        description: "Subscription status refreshed successfully."
+      });
+    } catch (error) {
+      console.error('Check subscription error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to refresh subscription status.",
+        variant: "destructive"
+      });
+    }
   };
 
   if (subscriptionsLoading) {
@@ -69,7 +128,21 @@ const AccountSubscriptions = () => {
               </Button>
             </div>
           )}
-          <Button className="bg-red-600 hover:bg-red-700">Manage Subscription</Button>
+          <div className="flex gap-2">
+            <Button 
+              onClick={handleManageSubscription}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Manage Subscription
+            </Button>
+            <Button 
+              onClick={handleRefreshStatus}
+              variant="outline"
+              className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white"
+            >
+              Refresh Status
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

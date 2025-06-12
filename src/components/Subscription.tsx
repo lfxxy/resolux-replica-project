@@ -6,6 +6,7 @@ import { useSubscriptions } from "@/hooks/useSubscriptions";
 import { useBasket } from "@/hooks/useBasket";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Subscription = () => {
   const { createSubscription } = useSubscriptions();
@@ -16,8 +17,8 @@ const Subscription = () => {
   const plans = [
     {
       name: "Weekly",
-      price: "$4.99",
-      priceInCents: 499,
+      price: "$3.99",
+      priceInCents: 399,
       duration: "7 days",
       planType: "weekly",
       icon: Zap,
@@ -26,8 +27,8 @@ const Subscription = () => {
     },
     {
       name: "Bi-Weekly",
-      price: "$7.99",
-      priceInCents: 799,
+      price: "$5.99",
+      priceInCents: 599,
       duration: "14 days",
       planType: "biweekly",
       icon: Crown,
@@ -36,8 +37,8 @@ const Subscription = () => {
     },
     {
       name: "Monthly",
-      price: "$12.99",
-      priceInCents: 1299,
+      price: "$9.99",
+      priceInCents: 999,
       duration: "30 days",
       planType: "monthly",
       icon: Crown,
@@ -45,11 +46,11 @@ const Subscription = () => {
       popular: false
     },
     {
-      name: "Lifetime",
-      price: "$199.99",
-      priceInCents: 19999,
-      duration: "Forever",
-      planType: "lifetime",
+      name: "Yearly",
+      price: "$99.99",
+      priceInCents: 9999,
+      duration: "12 months",
+      planType: "yearly",
       icon: Infinity,
       features: ["Full access to all features", "VIP support", "All future updates", "Early access to new features", "Custom configurations", "Priority feature requests"],
       popular: false
@@ -83,12 +84,36 @@ const Subscription = () => {
       return;
     }
 
-    // This will be implemented with Stripe integration
-    toast({
-      title: "Coming Soon",
-      description: "Stripe integration is being set up. Please add items to basket for now.",
-      variant: "default"
-    });
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: {
+          planType: plan.planType,
+          price: plan.priceInCents
+        }
+      });
+
+      if (error) {
+        console.error('Checkout error:', error);
+        toast({
+          title: "Error",
+          description: "Failed to create checkout session. Please try again.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (data?.url) {
+        // Open checkout in same window as requested
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create checkout session. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -99,11 +124,6 @@ const Subscription = () => {
           <p className="text-xl text-gray-400 max-w-2xl mx-auto">
             Get premium access to Resolux and dominate your gaming experience
           </p>
-          <div className="mt-6 p-4 bg-red-900/20 border border-red-600/30 rounded-lg max-w-md mx-auto">
-            <p className="text-red-400 text-sm">
-              🚀 Stripe payment integration coming soon! Add items to basket for now.
-            </p>
-          </div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
@@ -147,7 +167,7 @@ const Subscription = () => {
                     className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3"
                   >
                     <CreditCard className="w-4 h-4 mr-2" />
-                    Buy with Stripe
+                    Subscribe Now
                   </Button>
                   <Button 
                     onClick={() => handleAddToBasket(plan)}

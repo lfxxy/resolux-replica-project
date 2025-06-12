@@ -34,6 +34,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const checkSubscriptionStatus = async () => {
+    try {
+      await supabase.functions.invoke('check-subscription');
+    } catch (error) {
+      console.error('Error checking subscription status:', error);
+    }
+  };
+
   useEffect(() => {
     let mounted = true;
 
@@ -56,6 +64,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               email: profile?.email || session.user.email || '',
               username: profile?.username || ''
             });
+            
+            // Check subscription status after authentication
+            await checkSubscriptionStatus();
           }
         } catch (error) {
           console.error('Error fetching profile:', error);
