@@ -3,7 +3,7 @@ import { MessageSquare, Youtube } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="bg-black border-t border-red-900/30 py-8">
+    <footer className="bg-black border-t border-red-900/30 py-6">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between">
           <div className="flex items-center mb-4 md:mb-0">
