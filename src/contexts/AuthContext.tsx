@@ -38,14 +38,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       console.log('Creating/updating profile for user:', userId);
       
-      // Check if profile exists
+      // First check if profile exists
       const { data: existingProfile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .maybeSingle();
 
-      if (profileError) {
+      if (profileError && profileError.code !== 'PGRST116') {
         console.error('Error checking existing profile:', profileError);
         return null;
       }
@@ -64,6 +64,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         if (insertError) {
           console.error('Error creating profile:', insertError);
+          // If profile creation fails due to trigger, that's okay
+          if (insertError.code === '23505') {
+            // Unique constraint violation, profile might have been created by trigger
+            const { data: retrievedProfile } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', userId)
+              .single();
+            return retrievedProfile;
+          }
           return null;
         }
         return newProfile;
@@ -87,6 +97,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       if (session?.user) {
         try {
+          // Wait a bit for the trigger to complete
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
           const profile = await createOrUpdateProfile(
             session.user.id,
             session.user.email || '',
