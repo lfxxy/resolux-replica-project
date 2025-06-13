@@ -12,6 +12,10 @@ const BasketPage = () => {
   const { items, loading, total, removeFromBasket, updateQuantity } = useBasket();
 
   const formatPrice = (price: number) => {
+    // Handle both cents and dollar formats
+    if (price < 100) {
+      return `$${price.toFixed(2)}`;
+    }
     return `$${(price / 100).toFixed(2)}`;
   };
 
@@ -73,9 +77,16 @@ const BasketPage = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <h3 className="text-white font-semibold">{item.product_name}</h3>
-                        <Badge variant="secondary" className="mt-1">
-                          {item.product_type}
-                        </Badge>
+                        <div className="flex gap-2 mt-1">
+                          <Badge variant="secondary">
+                            {item.product_type}
+                          </Badge>
+                          {item.plan_type && (
+                            <Badge variant="outline" className="border-red-600 text-red-600">
+                              {item.plan_type}
+                            </Badge>
+                          )}
+                        </div>
                         <p className="text-gray-400 text-sm mt-2">
                           {formatPrice(item.price)} each
                         </p>
