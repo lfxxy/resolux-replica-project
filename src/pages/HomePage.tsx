@@ -46,16 +46,15 @@ const HomePage = () => {
       <div className="flex-1 bg-gradient-to-br from-black via-gray-900 to-red-900/20">
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-16">
-            <div className="flex items-center justify-center space-x-4 mb-8">
+            <div className="flex items-center justify-center mb-8">
               <img 
-                src="/lovable-uploads/5d63c41f-2b65-4e10-b667-c1c5d3b8b6ad.png" 
-                alt="Resolux Logo" 
-                className="w-20 h-20"
+                src="/lovable-uploads/fdfd75fd-0287-47f9-820e-e9d7f5f65f01.png" 
+                alt="Logo" 
+                className="h-20 w-auto"
                 loading="eager"
-                width="80"
+                width="auto"
                 height="80"
               />
-              <h1 className="text-6xl font-bold text-white">Resolux</h1>
             </div>
             
             <div className="space-y-4 mb-12">

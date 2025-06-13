@@ -6,16 +6,15 @@ const Footer = () => {
     <footer className="bg-black border-t border-red-900/30 py-8">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between">
-          <div className="flex items-center space-x-3 mb-4 md:mb-0">
+          <div className="flex items-center mb-4 md:mb-0">
             <img 
-              src="/lovable-uploads/5d63c41f-2b65-4e10-b667-c1c5d3b8b6ad.png" 
-              alt="Resolux Logo" 
-              className="w-8 h-8"
+              src="/lovable-uploads/fdfd75fd-0287-47f9-820e-e9d7f5f65f01.png" 
+              alt="Logo" 
+              className="h-8 w-auto"
               loading="lazy"
-              width="32"
+              width="auto"
               height="32"
             />
-            <span className="text-xl font-bold text-white">Resolux</span>
           </div>
           
           <div className="flex items-center space-x-6">
@@ -41,7 +40,7 @@ const Footer = () => {
         </div>
         
         <div className="mt-6 pt-6 border-t border-red-900/30 text-center text-gray-500 text-sm">
-          © 2024 Resolux. All rights reserved.
+          © 2024 All rights reserved.
         </div>
       </div>
     </footer>

@@ -16,16 +16,15 @@ const Header = () => {
     <header className="bg-black border-b border-red-900/30">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center space-x-8">
-          <Link to="/home" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+          <Link to="/home" className="flex items-center hover:opacity-80 transition-opacity">
             <img 
-              src="/lovable-uploads/5d63c41f-2b65-4e10-b667-c1c5d3b8b6ad.png" 
-              alt="Resolux Logo" 
-              className="w-8 h-8"
+              src="/lovable-uploads/fdfd75fd-0287-47f9-820e-e9d7f5f65f01.png" 
+              alt="Logo" 
+              className="h-10 w-auto"
               loading="eager"
-              width="32"
-              height="32"
+              width="auto"
+              height="40"
             />
-            <span className="text-2xl font-bold text-white">Resolux</span>
           </Link>
           <nav className="flex space-x-6">
             <Link 
