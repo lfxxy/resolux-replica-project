@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -53,7 +52,7 @@ export const useBasket = () => {
   }, [user?.id]);
 
   const addToBasket = useCallback(async (productName: string, productType: string, price: number, planType?: string, priceInCents?: number) => {
-    console.log('addToBasket called with:', { productName, productType, price, planType, priceInCents });
+    console.log('addToBasket called with:', { productName, productType, price, planType, priceInCents, userId: user?.id });
     
     if (!user?.id) {
       toast({
@@ -65,8 +64,9 @@ export const useBasket = () => {
     }
 
     try {
+      // Check if item already exists
       const existingItem = items.find(
-        item => item.product_name === productName && item.product_type === productType
+        item => item.product_name === productName && item.product_type === productType && item.plan_type === planType
       );
 
       if (existingItem) {
@@ -79,38 +79,44 @@ export const useBasket = () => {
         return;
       }
 
+      // Prepare insert data with proper structure
       const insertData: any = {
         user_id: user.id,
         product_name: productName,
         product_type: productType,
-        price: price,
+        price: Math.round(price), // Ensure it's an integer
         quantity: 1
       };
 
+      // Only add optional fields if they exist
       if (planType) insertData.plan_type = planType;
       if (priceInCents) insertData.price_in_cents = priceInCents;
 
       console.log('Inserting new item:', insertData);
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('basket_items')
-        .insert(insertData);
+        .insert(insertData)
+        .select();
 
       if (error) {
-        console.error('Error adding to basket:', error);
+        console.error('Supabase error details:', error);
         toast({
           title: "Error",
-          description: "Failed to add item to basket",
+          description: `Failed to add item to basket: ${error.message}`,
           variant: "destructive"
         });
         return;
       }
+
+      console.log('Successfully inserted:', data);
 
       toast({
         title: "Success",
         description: `${productName} added to basket`,
       });
 
+      // Refresh basket items
       await fetchBasketItems();
     } catch (error) {
       console.error('Error adding to basket:', error);
