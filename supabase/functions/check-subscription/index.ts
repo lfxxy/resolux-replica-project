@@ -27,6 +27,7 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
+    // Use the correct secret key name from Supabase secrets
     const stripeKey = Deno.env.get("stripekey");
     if (!stripeKey) throw new Error("Stripe secret key is not set");
     logStep("Stripe key verified");
