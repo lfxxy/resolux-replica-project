@@ -4,14 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
-import { useSubscriptions } from "@/hooks/useSubscriptions";
+import { useStripeSubscription } from "@/hooks/useStripeSubscription";
 import ProfilePicture from "@/components/ProfilePicture";
 
 const AccountGeneral = () => {
   const { user } = useAuth();
-  const { subscriptions } = useSubscriptions();
-
-  const activeSubscription = subscriptions.find(sub => sub.status === 'active');
+  const { subscribed, subscription_tier, subscription_end } = useStripeSubscription();
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -65,20 +63,20 @@ const AccountGeneral = () => {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-gray-300">Subscription Status</span>
-              <Badge className={activeSubscription ? "bg-green-600" : "bg-gray-600"}>
-                {activeSubscription ? "Active" : "Inactive"}
+              <Badge className={subscribed ? "bg-green-600" : "bg-gray-600"}>
+                {subscribed ? "Active" : "Inactive"}
               </Badge>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-300">Plan</span>
               <span className="text-white">
-                {activeSubscription ? activeSubscription.plan_type : "No active plan"}
+                {subscribed ? `${subscription_tier} Plan` : "No active plan"}
               </span>
             </div>
-            {activeSubscription && (
+            {subscribed && subscription_end && (
               <div className="flex justify-between items-center">
                 <span className="text-gray-300">Valid Until</span>
-                <span className="text-white">{formatDate(activeSubscription.expires_at)}</span>
+                <span className="text-white">{formatDate(subscription_end)}</span>
               </div>
             )}
           </div>
