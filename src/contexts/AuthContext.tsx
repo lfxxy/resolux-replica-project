@@ -34,105 +34,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const createOrUpdateProfile = async (userId: string, email: string, username?: string) => {
-    try {
-      console.log('Creating/updating profile for user:', userId);
-      
-      // First check if profile exists
-      const { data: existingProfile, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
-
-      if (profileError && profileError.code !== 'PGRST116') {
-        console.error('Error checking existing profile:', profileError);
-        return null;
-      }
-
-      if (!existingProfile) {
-        console.log('Creating new profile for user:', userId);
-        const { data: newProfile, error: insertError } = await supabase
-          .from('profiles')
-          .insert({
-            id: userId,
-            email: email,
-            username: username || email.split('@')[0]
-          })
-          .select()
-          .single();
-        
-        if (insertError) {
-          console.error('Error creating profile:', insertError);
-          // If profile creation fails due to trigger, that's okay
-          if (insertError.code === '23505') {
-            // Unique constraint violation, profile might have been created by trigger
-            const { data: retrievedProfile } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', userId)
-              .single();
-            return retrievedProfile;
-          }
-          return null;
-        }
-        return newProfile;
-      }
-
-      return existingProfile;
-    } catch (error) {
-      console.error('Error in createOrUpdateProfile:', error);
-      return null;
-    }
-  };
-
   useEffect(() => {
     let mounted = true;
-
-    const setAuthData = async (session: Session | null) => {
-      if (!mounted) return;
-      
-      console.log('Setting auth data:', { sessionExists: !!session, userId: session?.user?.id });
-      setSession(session);
-      
-      if (session?.user) {
-        try {
-          // Wait a bit for the trigger to complete
-          await new Promise(resolve => setTimeout(resolve, 100));
-          
-          const profile = await createOrUpdateProfile(
-            session.user.id,
-            session.user.email || '',
-            session.user.user_metadata?.username
-          );
-          
-          if (mounted) {
-            setUser({
-              id: session.user.id,
-              email: profile?.email || session.user.email || '',
-              username: profile?.username || session.user.user_metadata?.username || session.user.email?.split('@')[0] || ''
-            });
-          }
-        } catch (error) {
-          console.error('Error setting up user profile:', error);
-          if (mounted) {
-            setUser({
-              id: session.user.id,
-              email: session.user.email || '',
-              username: session.user.user_metadata?.username || session.user.email?.split('@')[0] || ''
-            });
-          }
-        }
-      } else {
-        if (mounted) {
-          setUser(null);
-        }
-      }
-      
-      if (mounted) {
-        setLoading(false);
-      }
-    };
 
     // Get initial session
     const initializeAuth = async () => {
@@ -146,8 +49,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           }
           return;
         }
-        console.log('Initial session:', { sessionExists: !!session });
-        await setAuthData(session);
+        
+        if (mounted) {
+          console.log('Initial session:', { sessionExists: !!session });
+          setSession(session);
+          if (session?.user) {
+            setUser({
+              id: session.user.id,
+              email: session.user.email || '',
+              username: session.user.user_metadata?.username || session.user.email?.split('@')[0] || ''
+            });
+          }
+          setLoading(false);
+        }
       } catch (error) {
         console.error('Error initializing auth:', error);
         if (mounted) {
@@ -162,7 +76,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event, { sessionExists: !!session });
-        await setAuthData(session);
+        
+        if (mounted) {
+          setSession(session);
+          if (session?.user) {
+            setUser({
+              id: session.user.id,
+              email: session.user.email || '',
+              username: session.user.user_metadata?.username || session.user.email?.split('@')[0] || ''
+            });
+          } else {
+            setUser(null);
+          }
+          setLoading(false);
+        }
       }
     );
 
@@ -186,15 +113,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.error('Login error:', error);
         setLoading(false);
         
-        // Handle specific error cases with user-friendly messages
         if (error.message.includes('Invalid login credentials')) {
           return { success: false, error: 'Invalid email or password. Please check your credentials and try again.' };
         } else if (error.message.includes('Email not confirmed')) {
           return { success: false, error: 'Please check your email and confirm your account before logging in.' };
         } else if (error.message.includes('Too many requests')) {
           return { success: false, error: 'Too many login attempts. Please wait a moment before trying again.' };
-        } else if (error.message.includes('Network')) {
-          return { success: false, error: 'Network error. Please check your connection and try again.' };
         }
         
         return { success: false, error: error.message || 'Login failed. Please try again.' };
@@ -234,15 +158,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.error('Signup error:', error);
         setLoading(false);
         
-        // Handle specific error cases
         if (error.message.includes('User already registered')) {
           return { success: false, error: 'An account with this email already exists. Please try logging in instead.' };
         } else if (error.message.includes('Password should be at least')) {
           return { success: false, error: 'Password must be at least 6 characters long.' };
         } else if (error.message.includes('Invalid email')) {
           return { success: false, error: 'Please enter a valid email address.' };
-        } else if (error.message.includes('Network')) {
-          return { success: false, error: 'Network error. Please check your connection and try again.' };
         }
         
         return { success: false, error: error.message || 'Registration failed. Please try again.' };
