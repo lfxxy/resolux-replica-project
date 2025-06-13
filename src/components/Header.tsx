@@ -14,16 +14,16 @@ const Header = () => {
 
   return (
     <header className="bg-black border-b border-red-900/30">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="container mx-auto px-4 h-20 flex items-center justify-between">
         <div className="flex items-center space-x-8">
           <Link to="/home" className="flex items-center hover:opacity-80 transition-opacity">
             <img 
               src="/lovable-uploads/fdfd75fd-0287-47f9-820e-e9d7f5f65f01.png" 
               alt="Logo" 
-              className="h-12 w-auto"
+              className="h-16 w-auto"
               loading="eager"
               width="auto"
-              height="48"
+              height="64"
             />
           </Link>
           <nav className="flex space-x-6">
