@@ -67,11 +67,24 @@ const Subscription = () => {
       return;
     }
 
-    await addToBasket(
-      `Resolux ${plan.name} Subscription`,
-      "subscription",
-      plan.priceInCents
-    );
+    try {
+      await addToBasket(
+        `Resolux ${plan.name} Subscription`,
+        "subscription",
+        plan.priceInCents
+      );
+      toast({
+        title: "Added to Basket",
+        description: `${plan.name} subscription added to your basket`
+      });
+    } catch (error) {
+      console.error('Error adding to basket:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add item to basket. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleStripeCheckout = async (plan: typeof plans[0]) => {
@@ -85,6 +98,8 @@ const Subscription = () => {
     }
 
     try {
+      console.log('Creating checkout session for plan:', plan.planType);
+      
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: {
           planType: plan.planType,
@@ -103,8 +118,16 @@ const Subscription = () => {
       }
 
       if (data?.url) {
-        // Open checkout in same window as requested
+        console.log('Redirecting to checkout:', data.url);
+        // Redirect to checkout
         window.location.href = data.url;
+      } else {
+        console.error('No checkout URL returned:', data);
+        toast({
+          title: "Error",
+          description: "No checkout URL received. Please try again.",
+          variant: "destructive"
+        });
       }
     } catch (error) {
       console.error('Checkout error:', error);

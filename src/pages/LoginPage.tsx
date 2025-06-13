@@ -33,32 +33,40 @@ const LoginPage = () => {
       
       if (isLogin) {
         success = await login(email, password);
+        if (success) {
+          toast({
+            title: "Success",
+            description: "Welcome back to Resolux"
+          });
+          navigate("/home");
+        } else {
+          toast({
+            title: "Login Failed",
+            description: "Invalid email or password. Please check your credentials and try again.",
+            variant: "destructive"
+          });
+        }
       } else {
         success = await signup(email, password, username);
-      }
-
-      if (success) {
-        toast({
-          title: "Success",
-          description: isLogin ? "Welcome back to Resolux" : "Account created successfully"
-        });
-        navigate("/home");
-      } else {
-        // Show specific error message for email confirmation
-        const errorMessage = isLogin 
-          ? "Login failed. If you just created your account, please check your email and click the confirmation link first. You can also disable email confirmation in Supabase settings for testing."
-          : "Account creation failed. Please try again.";
-          
-        toast({
-          title: "Authentication Failed",
-          description: errorMessage,
-          variant: "destructive"
-        });
+        if (success) {
+          toast({
+            title: "Account Created",
+            description: "Please check your email and click the confirmation link to complete your registration."
+          });
+          // Don't navigate automatically for signup - wait for email confirmation
+        } else {
+          toast({
+            title: "Registration Failed",
+            description: "Unable to create account. Please try again.",
+            variant: "destructive"
+          });
+        }
       }
     } catch (error) {
+      console.error('Auth error:', error);
       toast({
         title: "Error", 
-        description: "An unexpected error occurred",
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -133,6 +141,7 @@ const LoginPage = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  minLength={6}
                   className="bg-black border-gray-700 text-white placeholder:text-gray-500 focus:border-red-600 focus:ring-red-600"
                 />
               </div>
@@ -145,14 +154,6 @@ const LoginPage = () => {
                 {loading ? "Processing..." : (isLogin ? "Sign In" : "Create Account")}
               </Button>
             </form>
-            
-            {isLogin && (
-              <div className="mt-4 p-3 bg-gray-800 border border-gray-700 rounded-md">
-                <p className="text-xs text-gray-400">
-                  <strong>Note:</strong> If you just created an account, check your email for a confirmation link before logging in.
-                </p>
-              </div>
-            )}
             
             <div className="mt-6 text-center">
               <button
