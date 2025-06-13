@@ -11,6 +11,16 @@ const Subscription = () => {
   const { isAuthenticated } = useAuth();
   const { addToBasket } = useBasket();
 
+  // Standardized features for all plans
+  const standardFeatures = [
+    "CS2 Premium Menu",
+    "All Premium Features", 
+    "Regular Updates",
+    "Undetected Technology",
+    "Discord Support",
+    "Stream-Proof Mode"
+  ];
+
   const plans = [
     {
       name: "Weekly",
@@ -19,7 +29,7 @@ const Subscription = () => {
       duration: "7 days",
       planType: "weekly",
       icon: Zap,
-      features: ["CS2 Aimbot & ESP", "Wallhack features", "Basic anti-detection", "Regular updates", "Discord support"],
+      features: standardFeatures,
       popular: false
     },
     {
@@ -29,7 +39,7 @@ const Subscription = () => {
       duration: "14 days",
       planType: "biweekly",
       icon: Crown,
-      features: ["All CS2 features", "Advanced aimbot settings", "Custom crosshair overlay", "Priority support", "Early access to updates", "Stream-proof mode"],
+      features: standardFeatures,
       popular: true
     },
     {
@@ -39,7 +49,7 @@ const Subscription = () => {
       duration: "30 days",
       planType: "monthly",
       icon: Crown,
-      features: ["Premium CS2 suite", "Rage & Legit modes", "Skin changer", "Inventory spoofer", "Custom configurations", "VIP Discord access", "1-on-1 setup help"],
+      features: standardFeatures,
       popular: false
     },
     {
@@ -49,7 +59,7 @@ const Subscription = () => {
       duration: "12 months",
       planType: "yearly",
       icon: Infinity,
-      features: ["Ultimate CS2 package", "All current & future features", "Private build access", "Custom feature requests", "Dedicated support agent", "Lifetime updates", "Community VIP status"],
+      features: standardFeatures,
       popular: false
     }
   ];
