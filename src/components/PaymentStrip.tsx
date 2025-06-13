@@ -39,11 +39,8 @@ const PaymentStrip = () => {
   ];
 
   return (
-    <div className="bg-gray-900 border-t border-red-900/30 py-6">
+    <div className="bg-gray-900 border-t border-red-900/30 py-4">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-4">
-          <h3 className="text-sm text-gray-400 font-medium">Accepted Payment Methods</h3>
-        </div>
         <div className="flex flex-wrap justify-center items-center gap-6">
           {paymentMethods.map((method, index) => (
             <div key={index} className="flex items-center justify-center w-16 h-12 bg-white rounded-lg p-3 hover:scale-105 transition-transform">
@@ -56,7 +53,6 @@ const PaymentStrip = () => {
                 height="48"
                 onError={(e) => {
                   console.log(`Failed to load ${method.name} logo`);
-                  // Fallback to a simple text display if image fails
                   const target = e.target as HTMLImageElement;
                   target.style.display = 'none';
                   const parent = target.parentElement;
