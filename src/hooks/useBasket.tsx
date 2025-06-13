@@ -11,6 +11,9 @@ interface BasketItem {
   price: number;
   quantity: number;
   created_at: string;
+  // Add subscription-specific fields
+  plan_type?: string;
+  price_in_cents?: number;
 }
 
 export const useBasket = () => {
@@ -49,7 +52,7 @@ export const useBasket = () => {
     }
   }, [user?.id]);
 
-  const addToBasket = useCallback(async (productName: string, productType: string, price: number) => {
+  const addToBasket = useCallback(async (productName: string, productType: string, price: number, planType?: string, priceInCents?: number) => {
     if (!user?.id) {
       toast({
         title: "Error",
@@ -69,15 +72,21 @@ export const useBasket = () => {
         return;
       }
 
+      const insertData: any = {
+        user_id: user.id,
+        product_name: productName,
+        product_type: productType,
+        price: price,
+        quantity: 1
+      };
+
+      // Add subscription-specific fields if provided
+      if (planType) insertData.plan_type = planType;
+      if (priceInCents) insertData.price_in_cents = priceInCents;
+
       const { error } = await supabase
         .from('basket_items')
-        .insert({
-          user_id: user.id,
-          product_name: productName,
-          product_type: productType,
-          price: price,
-          quantity: 1
-        });
+        .insert(insertData);
 
       if (error) {
         console.error('Error adding to basket:', error);

@@ -1,13 +1,15 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check, Crown, Zap, Infinity, ShoppingCart, Settings } from "lucide-react";
+import { Check, Crown, Zap, Infinity, ShoppingCart, Settings, Plus } from "lucide-react";
 import { useStripeSubscription } from "@/hooks/useStripeSubscription";
 import { useAuth } from "@/contexts/AuthContext";
+import { useBasket } from "@/hooks/useBasket";
 
 const Subscription = () => {
   const { createCheckout, subscribed, subscription_tier, loading, openCustomerPortal } = useStripeSubscription();
   const { isAuthenticated } = useAuth();
+  const { addToBasket } = useBasket();
 
   const plans = [
     {
@@ -54,6 +56,17 @@ const Subscription = () => {
 
   const handlePurchase = async (plan: typeof plans[0]) => {
     await createCheckout(plan.planType, plan.priceInCents);
+  };
+
+  const handleAddToBasket = async (plan: typeof plans[0]) => {
+    const priceInDollars = plan.priceInCents / 100;
+    await addToBasket(
+      `Resolux ${plan.name} Subscription`,
+      "subscription",
+      priceInDollars,
+      plan.planType,
+      plan.priceInCents
+    );
   };
 
   const isCurrentPlan = (planName: string) => {
@@ -143,14 +156,26 @@ const Subscription = () => {
                         Current Plan
                       </Button>
                     ) : (
-                      <Button 
-                        onClick={() => handlePurchase(plan)}
-                        disabled={loading || !isAuthenticated}
-                        className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3"
-                      >
-                        <ShoppingCart className="w-4 h-4 mr-2" />
-                        {!isAuthenticated ? "Login Required" : "Purchase Plan"}
-                      </Button>
+                      <>
+                        <Button 
+                          onClick={() => handlePurchase(plan)}
+                          disabled={loading || !isAuthenticated}
+                          className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3"
+                        >
+                          <ShoppingCart className="w-4 h-4 mr-2" />
+                          {!isAuthenticated ? "Login Required" : "Purchase Now"}
+                        </Button>
+                        
+                        <Button 
+                          onClick={() => handleAddToBasket(plan)}
+                          disabled={loading || !isAuthenticated}
+                          variant="outline"
+                          className="w-full border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-medium py-2"
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          Add to Basket
+                        </Button>
+                      </>
                     )}
                   </div>
                 </CardContent>
