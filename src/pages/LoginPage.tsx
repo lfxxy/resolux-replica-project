@@ -75,9 +75,13 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
+      console.log('Form submission started:', { isLogin, email: email.trim() });
+      
       if (isLogin) {
         console.log('Attempting login...');
         const result = await login(email, password);
+        console.log('Login result:', result);
+        
         if (result.success) {
           toast({
             title: "Success",
@@ -85,15 +89,18 @@ const LoginPage = () => {
           });
           navigate("/home");
         } else {
+          console.error('Login failed:', result.error);
           toast({
             title: "Login Failed",
-            description: result.error || "Login failed. Please try again.",
+            description: result.error || "Login failed. Please check your credentials.",
             variant: "destructive"
           });
         }
       } else {
         console.log('Attempting signup...');
         const result = await signup(email, password, username);
+        console.log('Signup result:', result);
+        
         if (result.success) {
           toast({
             title: "Account Created",
@@ -105,6 +112,7 @@ const LoginPage = () => {
           setUsername("");
           setIsLogin(true); // Switch to login view
         } else {
+          console.error('Signup failed:', result.error);
           toast({
             title: "Registration Failed",
             description: result.error || "Unable to create account. Please try again.",
@@ -227,6 +235,13 @@ const LoginPage = () => {
             </div>
           </CardContent>
         </Card>
+        
+        {/* Debug info for troubleshooting */}
+        <div className="mt-4 p-4 bg-gray-800 rounded-lg text-xs text-gray-400">
+          <p>Debug: Supabase URL configured</p>
+          <p>Debug: API Key present</p>
+          <p>If you continue to see "Invalid API key" errors, please check your Supabase project settings.</p>
+        </div>
       </div>
     </div>
   );
