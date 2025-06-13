@@ -34,7 +34,8 @@ const LoginPage = () => {
       return false;
     }
 
-    if (!email.includes('@')) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
       toast({
         title: "Validation Error",
         description: "Please enter a valid email address.",
@@ -52,10 +53,10 @@ const LoginPage = () => {
       return false;
     }
 
-    if (!isLogin && !username.trim()) {
+    if (!isLogin && (!username || username.trim().length < 2)) {
       toast({
         title: "Validation Error",
-        description: "Please enter a username.",
+        description: "Username must be at least 2 characters long.",
         variant: "destructive"
       });
       return false;
@@ -75,6 +76,7 @@ const LoginPage = () => {
 
     try {
       if (isLogin) {
+        console.log('Attempting login...');
         const result = await login(email, password);
         if (result.success) {
           toast({
@@ -85,11 +87,12 @@ const LoginPage = () => {
         } else {
           toast({
             title: "Login Failed",
-            description: result.error || "Invalid email or password. Please check your credentials and try again.",
+            description: result.error || "Login failed. Please try again.",
             variant: "destructive"
           });
         }
       } else {
+        console.log('Attempting signup...');
         const result = await signup(email, password, username);
         if (result.success) {
           toast({
@@ -178,6 +181,7 @@ const LoginPage = () => {
                     onChange={(e) => setUsername(e.target.value)}
                     required
                     disabled={loading}
+                    minLength={2}
                     className="bg-black border-gray-700 text-white placeholder:text-gray-500 focus:border-red-600 focus:ring-red-600"
                   />
                 </div>
