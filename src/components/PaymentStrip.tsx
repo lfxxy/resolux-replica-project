@@ -3,65 +3,75 @@ const PaymentStrip = () => {
   const paymentMethods = [
     { 
       name: "Visa", 
-      logo: "https://cdn.worldvectorlogo.com/logos/visa-10.svg",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg",
       alt: "Visa"
     },
     { 
       name: "Mastercard", 
-      logo: "https://cdn.worldvectorlogo.com/logos/mastercard-6.svg",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg",
       alt: "Mastercard"
     },
     { 
       name: "American Express", 
-      logo: "https://cdn.worldvectorlogo.com/logos/american-express-3.svg",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg",
       alt: "American Express"
     },
     { 
       name: "PayPal", 
-      logo: "https://cdn.worldvectorlogo.com/logos/paypal-2.svg",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg",
       alt: "PayPal"
     },
     { 
       name: "Apple Pay", 
-      logo: "https://cdn.worldvectorlogo.com/logos/apple-pay-2.svg",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg",
       alt: "Apple Pay"
     },
     { 
       name: "Google Pay", 
-      logo: "https://cdn.worldvectorlogo.com/logos/google-pay-2.svg",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/c/c7/Google_Pay_%28GPay%29_Logo.svg",
       alt: "Google Pay"
+    },
+    {
+      name: "Stripe",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg",
+      alt: "Stripe"
+    },
+    {
+      name: "Discover",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/5/57/Discover_Card_logo.svg",
+      alt: "Discover"
     }
   ];
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = e.target as HTMLImageElement;
     console.log(`Failed to load image: ${target.src}`);
-    // Hide the container if image fails to load
+    // Try fallback or hide the container if image fails to load
     const container = target.closest('.payment-logo-container');
     if (container) {
-      (container as HTMLElement).style.display = 'none';
+      (container as HTMLElement).style.opacity = '0.5';
     }
   };
 
   return (
     <div className="bg-gray-900 border-t border-red-900/30 py-4">
       <div className="container mx-auto px-4">
-        <div className="flex flex-wrap justify-center items-center gap-8">
+        <div className="flex flex-wrap justify-center items-center gap-6">
           {paymentMethods.map((method, index) => (
             <div 
               key={index} 
-              className="payment-logo-container flex items-center justify-center w-20 h-12 bg-white rounded-lg p-3 hover:scale-105 transition-transform shadow-sm"
+              className="payment-logo-container flex items-center justify-center w-16 h-10 bg-white rounded-md p-2 hover:scale-105 transition-all duration-200 shadow-sm border border-gray-200"
             >
               <img 
                 src={method.logo} 
                 alt={method.alt}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain filter brightness-100"
                 loading="lazy"
-                width="80"
-                height="48"
+                width="64"
+                height="40"
                 decoding="async"
                 onError={handleImageError}
-                crossOrigin="anonymous"
+                style={{ maxWidth: '100%', maxHeight: '100%' }}
               />
             </div>
           ))}
