@@ -1,4 +1,3 @@
-
 const PaymentStrip = () => {
   const paymentMethods = [
     { 
@@ -18,7 +17,7 @@ const PaymentStrip = () => {
     },
     { 
       name: "PayPal", 
-      logo: "https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/a/a4/Paypal_2014_logo.png",
       alt: "PayPal"
     },
     { 
@@ -37,9 +36,9 @@ const PaymentStrip = () => {
       alt: "Stripe"
     },
     {
-      name: "Discover",
-      logo: "https://upload.wikimedia.org/wikipedia/commons/5/57/Discover_Card_logo.svg",
-      alt: "Discover"
+      name: "Steam",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg",
+      alt: "Steam"
     }
   ];
 
