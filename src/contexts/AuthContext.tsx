@@ -42,6 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         console.log('Initializing auth...');
         const { data: { session }, error } = await supabase.auth.getSession();
+        
         if (error) {
           console.error('Error getting session:', error);
           if (mounted) {
@@ -112,15 +113,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (error) {
         console.error('Login error:', error);
         setLoading(false);
-        
-        if (error.message.includes('Invalid login credentials')) {
-          return { success: false, error: 'Invalid email or password. Please check your credentials and try again.' };
-        } else if (error.message.includes('Email not confirmed')) {
-          return { success: false, error: 'Please check your email and confirm your account before logging in.' };
-        } else if (error.message.includes('Too many requests')) {
-          return { success: false, error: 'Too many login attempts. Please wait a moment before trying again.' };
-        }
-        
         return { success: false, error: error.message || 'Login failed. Please try again.' };
       }
       
@@ -147,7 +139,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         email: email.trim(),
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`,
           data: {
             username: username.trim()
           }
@@ -157,19 +148,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (error) {
         console.error('Signup error:', error);
         setLoading(false);
-        
-        if (error.message.includes('User already registered')) {
-          return { success: false, error: 'An account with this email already exists. Please try logging in instead.' };
-        } else if (error.message.includes('Password should be at least')) {
-          return { success: false, error: 'Password must be at least 6 characters long.' };
-        } else if (error.message.includes('Invalid email')) {
-          return { success: false, error: 'Please enter a valid email address.' };
-        }
-        
         return { success: false, error: error.message || 'Registration failed. Please try again.' };
       }
       
-      console.log('Signup successful:', { userId: data.user?.id, needsConfirmation: !data.session });
+      console.log('Signup successful:', { userId: data.user?.id });
       setLoading(false);
       return { success: true };
     } catch (error) {

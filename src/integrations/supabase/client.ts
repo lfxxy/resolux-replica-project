@@ -6,18 +6,11 @@ import type { Database } from './types';
 const SUPABASE_URL = "https://bxccnzwawspzkhwejzjk.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4Y2Nuendhd3Nwemtod2VqemprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyMzU3NTEsImV4cCI6MjA2NDgxMTc1MX0.4mUjFS9vFbVbJELqO-It8SfXri8QTLCx1JiPBaSsGhg";
 
-// Create the supabase client with proper configuration
+// Create the supabase client with minimal configuration to avoid conflicts
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: true,
-    flowType: 'pkce',
-    storage: window.localStorage
-  },
-  global: {
-    headers: {
-      'x-client-info': 'supabase-js-web'
-    }
+    detectSessionInUrl: true
   }
 });

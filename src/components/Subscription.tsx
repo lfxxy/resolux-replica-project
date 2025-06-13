@@ -1,15 +1,12 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check, Crown, Zap, Infinity, ShoppingCart, CreditCard } from "lucide-react";
-import { useSubscriptions } from "@/hooks/useSubscriptions";
+import { Check, Crown, Zap, Infinity, ShoppingCart } from "lucide-react";
 import { useBasket } from "@/hooks/useBasket";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 const Subscription = () => {
-  const { createSubscription } = useSubscriptions();
   const { addToBasket } = useBasket();
   const { isAuthenticated } = useAuth();
   const { toast } = useToast();
@@ -87,58 +84,6 @@ const Subscription = () => {
     }
   };
 
-  const handleStripeCheckout = async (plan: typeof plans[0]) => {
-    if (!isAuthenticated) {
-      toast({
-        title: "Authentication Required",
-        description: "Please log in to purchase a subscription",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    try {
-      console.log('Creating checkout session for plan:', plan.planType);
-      
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: {
-          planType: plan.planType,
-          price: plan.priceInCents
-        }
-      });
-
-      if (error) {
-        console.error('Checkout error:', error);
-        toast({
-          title: "Error",
-          description: "Failed to create checkout session. Please try again.",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      if (data?.url) {
-        console.log('Redirecting to checkout:', data.url);
-        // Redirect to checkout
-        window.location.href = data.url;
-      } else {
-        console.error('No checkout URL returned:', data);
-        toast({
-          title: "Error",
-          description: "No checkout URL received. Please try again.",
-          variant: "destructive"
-        });
-      }
-    } catch (error) {
-      console.error('Checkout error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to create checkout session. Please try again.",
-        variant: "destructive"
-      });
-    }
-  };
-
   return (
     <section id="subscriptions" className="py-16 bg-gradient-to-br from-black via-gray-900 to-red-900/20">
       <div className="container mx-auto px-4">
@@ -186,16 +131,8 @@ const Subscription = () => {
                 
                 <div className="space-y-2">
                   <Button 
-                    onClick={() => handleStripeCheckout(plan)}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3"
-                  >
-                    <CreditCard className="w-4 h-4 mr-2" />
-                    Subscribe Now
-                  </Button>
-                  <Button 
                     onClick={() => handleAddToBasket(plan)}
-                    variant="outline"
-                    className="w-full border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-medium py-3"
+                    className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3"
                   >
                     <ShoppingCart className="w-4 h-4 mr-2" />
                     Add to Basket
