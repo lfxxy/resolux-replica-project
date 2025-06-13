@@ -97,7 +97,7 @@ const LoginPage = () => {
         if (result.success) {
           toast({
             title: "Account Created",
-            description: "Please check your email and click the confirmation link to complete your registration."
+            description: "Welcome to Resolux! You can now access all features."
           });
           // Reset form after successful signup
           setEmail("");
