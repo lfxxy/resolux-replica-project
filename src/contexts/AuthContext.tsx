@@ -197,7 +197,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           return { success: false, error: 'Network error. Please check your connection and try again.' };
         }
         
-        return { success: false, error: 'Login failed. Please try again.' };
+        return { success: false, error: error.message || 'Login failed. Please try again.' };
       }
       
       if (!data.user) {
@@ -245,7 +245,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           return { success: false, error: 'Network error. Please check your connection and try again.' };
         }
         
-        return { success: false, error: 'Registration failed. Please try again.' };
+        return { success: false, error: error.message || 'Registration failed. Please try again.' };
       }
       
       console.log('Signup successful:', { userId: data.user?.id, needsConfirmation: !data.session });
