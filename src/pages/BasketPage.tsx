@@ -1,4 +1,3 @@
-
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,12 +10,26 @@ import { Link } from "react-router-dom";
 const BasketPage = () => {
   const { items, loading, total, removeFromBasket, updateQuantity } = useBasket();
 
-  const formatPrice = (price: number) => {
-    // Handle both cents and dollar formats
-    if (price < 100) {
-      return `$${price.toFixed(2)}`;
+  const formatPrice = (item: any) => {
+    // If it's a subscription item with price_in_cents, use that
+    if (item.price_in_cents && item.product_type === 'subscription') {
+      return `$${(item.price_in_cents / 100).toFixed(2)}`;
     }
-    return `$${(price / 100).toFixed(2)}`;
+    // Otherwise, treat the price as dollars
+    return `$${item.price.toFixed(2)}`;
+  };
+
+  const calculateItemTotal = (item: any) => {
+    if (item.price_in_cents && item.product_type === 'subscription') {
+      return (item.price_in_cents / 100) * item.quantity;
+    }
+    return item.price * item.quantity;
+  };
+
+  const calculateGrandTotal = () => {
+    return items.reduce((sum, item) => {
+      return sum + calculateItemTotal(item);
+    }, 0);
   };
 
   const handleCheckout = () => {
@@ -88,7 +101,7 @@ const BasketPage = () => {
                           )}
                         </div>
                         <p className="text-gray-400 text-sm mt-2">
-                          {formatPrice(item.price)} each
+                          {formatPrice(item)} each
                         </p>
                       </div>
                       
@@ -117,7 +130,7 @@ const BasketPage = () => {
                         
                         <div className="text-right">
                           <p className="text-white font-semibold">
-                            {formatPrice(item.price * item.quantity)}
+                            ${calculateItemTotal(item).toFixed(2)}
                           </p>
                         </div>
                         
@@ -145,7 +158,7 @@ const BasketPage = () => {
                 <CardContent className="space-y-4">
                   <div className="flex justify-between text-gray-400">
                     <span>Subtotal</span>
-                    <span>{formatPrice(total)}</span>
+                    <span>${calculateGrandTotal().toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-gray-400">
                     <span>Tax</span>
@@ -154,7 +167,7 @@ const BasketPage = () => {
                   <div className="border-t border-gray-700 pt-4">
                     <div className="flex justify-between text-white font-semibold text-lg">
                       <span>Total</span>
-                      <span>{formatPrice(total)}</span>
+                      <span>${calculateGrandTotal().toFixed(2)}</span>
                     </div>
                   </div>
                   <Button 
