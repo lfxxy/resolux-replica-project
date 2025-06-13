@@ -25,11 +25,6 @@ const PaymentStrip = () => {
       logo: "https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg",
       alt: "Apple Pay"
     },
-    { 
-      name: "Google Pay", 
-      logo: "https://upload.wikimedia.org/wikipedia/commons/c/c7/Google_Pay_%28GPay%29_Logo.svg",
-      alt: "Google Pay"
-    },
     {
       name: "Stripe",
       logo: "https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg",
