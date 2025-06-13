@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check, Crown, Zap, Infinity, ShoppingCart, Settings, Plus } from "lucide-react";
+import { Check, Crown, Zap, Infinity, ShoppingCart, Settings, DollarSign } from "lucide-react";
 import { useStripeSubscription } from "@/hooks/useStripeSubscription";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBasket } from "@/hooks/useBasket";
@@ -162,7 +162,7 @@ const Subscription = () => {
                           disabled={loading || !isAuthenticated}
                           className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3"
                         >
-                          <ShoppingCart className="w-4 h-4 mr-2" />
+                          <DollarSign className="w-4 h-4 mr-2" />
                           {!isAuthenticated ? "Login Required" : "Purchase Now"}
                         </Button>
                         
@@ -172,7 +172,7 @@ const Subscription = () => {
                           variant="outline"
                           className="w-full border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-medium py-2"
                         >
-                          <Plus className="w-4 h-4 mr-2" />
+                          <ShoppingCart className="w-4 h-4 mr-2" />
                           Add to Basket
                         </Button>
                       </>
