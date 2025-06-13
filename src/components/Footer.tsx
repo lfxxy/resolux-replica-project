@@ -10,10 +10,10 @@ const Footer = () => {
             <img 
               src="/lovable-uploads/fdfd75fd-0287-47f9-820e-e9d7f5f65f01.png" 
               alt="Logo" 
-              className="h-8 w-auto"
+              className="h-10 w-auto"
               loading="lazy"
               width="auto"
-              height="32"
+              height="40"
             />
           </div>
           
