@@ -46,7 +46,7 @@ const HomePage = () => {
       <div className="flex-1 bg-gradient-to-br from-black via-gray-900 to-red-900/20">
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-16">
-            <div className="flex items-center justify-center mb-8">
+            <div className="flex items-center justify-center mb-4">
               <img 
                 src="/lovable-uploads/fdfd75fd-0287-47f9-820e-e9d7f5f65f01.png" 
                 alt="Logo" 
