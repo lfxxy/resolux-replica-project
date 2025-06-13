@@ -50,10 +50,10 @@ const HomePage = () => {
               <img 
                 src="/lovable-uploads/fdfd75fd-0287-47f9-820e-e9d7f5f65f01.png" 
                 alt="Logo" 
-                className="h-40 w-auto"
+                className="h-80 w-auto"
                 loading="eager"
                 width="auto"
-                height="160"
+                height="320"
               />
             </div>
             
