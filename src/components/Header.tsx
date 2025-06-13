@@ -24,6 +24,8 @@ const Header = () => {
               loading="eager"
               width="32"
               height="32"
+              decoding="sync"
+              fetchPriority="high"
             />
           </Link>
           <nav className="flex space-x-6">

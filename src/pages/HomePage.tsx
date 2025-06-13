@@ -1,3 +1,4 @@
+
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PaymentStrip from "@/components/PaymentStrip";
@@ -53,6 +54,8 @@ const HomePage = () => {
                 loading="eager"
                 width="auto"
                 height="256"
+                decoding="sync"
+                fetchPriority="high"
               />
             </div>
             

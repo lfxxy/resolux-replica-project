@@ -34,7 +34,7 @@ const PaymentStrip = () => {
   ];
 
   return (
-    <div className="bg-gray-900 border-t border-red-900/30 py-4">
+    <div className="bg-gray-900 border-t border-red-900/30 py-3">
       <div className="container mx-auto px-4">
         <div className="flex flex-wrap justify-center items-center gap-6">
           {paymentMethods.map((method, index) => (
@@ -43,7 +43,7 @@ const PaymentStrip = () => {
                 src={method.logo} 
                 alt={method.alt}
                 className="w-full h-full object-contain"
-                loading="eager"
+                loading="lazy"
                 width="40"
                 height="24"
                 decoding="async"
