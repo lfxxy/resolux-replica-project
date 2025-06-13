@@ -34,17 +34,43 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const checkSubscriptionStatus = async () => {
+  const createOrUpdateProfile = async (userId: string, email: string, username?: string) => {
     try {
-      console.log('Checking subscription status...');
-      const { data, error } = await supabase.functions.invoke('check-subscription');
-      if (error) {
-        console.error('Error checking subscription status:', error);
-      } else {
-        console.log('Subscription status checked:', data);
+      // Check if profile exists
+      const { data: existingProfile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (profileError && profileError.code !== 'PGRST116') {
+        console.error('Error checking existing profile:', profileError);
+        return null;
       }
+
+      if (!existingProfile) {
+        console.log('Creating new profile for user:', userId);
+        const { data: newProfile, error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            id: userId,
+            email: email,
+            username: username || email.split('@')[0]
+          })
+          .select()
+          .single();
+        
+        if (insertError) {
+          console.error('Error creating profile:', insertError);
+          return null;
+        }
+        return newProfile;
+      }
+
+      return existingProfile;
     } catch (error) {
-      console.error('Error checking subscription status:', error);
+      console.error('Error in createOrUpdateProfile:', error);
+      return null;
     }
   };
 
@@ -59,42 +85,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       if (session?.user) {
         try {
-          // First, ensure the profile exists
-          const { data: existingProfile, error: profileError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .maybeSingle();
-
-          if (profileError) {
-            console.error('Error checking existing profile:', profileError);
-          }
-
-          if (!existingProfile && !profileError) {
-            console.log('Creating new profile for user:', session.user.id);
-            const { error: insertError } = await supabase
-              .from('profiles')
-              .insert({
-                id: session.user.id,
-                email: session.user.email || '',
-                username: session.user.user_metadata?.username || session.user.email?.split('@')[0] || ''
-              });
-            
-            if (insertError) {
-              console.error('Error creating profile:', insertError);
-            }
-          }
-
-          // Get the profile data
-          const { data: profile, error: fetchError } = await supabase
-            .from('profiles')
-            .select('username, email')
-            .eq('id', session.user.id)
-            .maybeSingle();
-          
-          if (fetchError) {
-            console.error('Error fetching profile:', fetchError);
-          }
+          const profile = await createOrUpdateProfile(
+            session.user.id,
+            session.user.email || '',
+            session.user.user_metadata?.username
+          );
           
           if (mounted) {
             setUser({
@@ -102,14 +97,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               email: profile?.email || session.user.email || '',
               username: profile?.username || session.user.user_metadata?.username || session.user.email?.split('@')[0] || ''
             });
-            
-            // Check subscription status after authentication
-            setTimeout(() => {
-              checkSubscriptionStatus();
-            }, 1000);
           }
         } catch (error) {
-          console.error('Error fetching/creating profile:', error);
+          console.error('Error setting up user profile:', error);
           if (mounted) {
             setUser({
               id: session.user.id,
@@ -130,22 +120,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      if (error) {
-        console.error('Error getting session:', error);
+    const initializeAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Error getting session:', error);
+          if (mounted) {
+            setLoading(false);
+          }
+          return;
+        }
+        await setAuthData(session);
+      } catch (error) {
+        console.error('Error initializing auth:', error);
         if (mounted) {
           setLoading(false);
         }
-        return;
       }
-      setAuthData(session);
-    });
+    };
+
+    initializeAuth();
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event, { sessionExists: !!session });
-        setAuthData(session);
+        await setAuthData(session);
       }
     );
 
@@ -158,40 +158,69 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
       console.log('Attempting login for:', email);
+      
+      // Clear any existing session first
+      await supabase.auth.signOut();
+      
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: email.trim(),
         password
       });
       
       if (error) {
         console.error('Login error:', error);
+        
+        // Handle specific error cases
+        if (error.message.includes('Invalid login credentials')) {
+          return { success: false, error: 'Invalid email or password. Please check your credentials.' };
+        } else if (error.message.includes('Email not confirmed')) {
+          return { success: false, error: 'Please check your email and confirm your account before logging in.' };
+        } else if (error.message.includes('Invalid API key')) {
+          return { success: false, error: 'Authentication service error. Please try again later.' };
+        }
+        
         return { success: false, error: error.message };
       }
       
-      console.log('Login successful:', { userId: data.user?.id });
+      if (!data.user) {
+        return { success: false, error: 'Login failed - no user data received.' };
+      }
+      
+      console.log('Login successful:', { userId: data.user.id });
       return { success: true };
     } catch (error) {
       console.error('Login error:', error);
-      return { success: false, error: 'An unexpected error occurred during login' };
+      return { success: false, error: 'An unexpected error occurred during login. Please try again.' };
     }
   };
 
   const signup = async (email: string, password: string, username: string): Promise<{ success: boolean; error?: string }> => {
     try {
       console.log('Attempting signup for:', email);
+      
       const { data, error } = await supabase.auth.signUp({
-        email,
+        email: email.trim(),
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/`,
           data: {
-            username: username
+            username: username.trim()
           }
         }
       });
       
       if (error) {
         console.error('Signup error:', error);
+        
+        // Handle specific error cases
+        if (error.message.includes('User already registered')) {
+          return { success: false, error: 'An account with this email already exists. Please try logging in instead.' };
+        } else if (error.message.includes('Password should be at least')) {
+          return { success: false, error: 'Password must be at least 6 characters long.' };
+        } else if (error.message.includes('Invalid API key')) {
+          return { success: false, error: 'Authentication service error. Please try again later.' };
+        }
+        
         return { success: false, error: error.message };
       }
       
@@ -199,7 +228,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return { success: true };
     } catch (error) {
       console.error('Signup error:', error);
-      return { success: false, error: 'An unexpected error occurred during signup' };
+      return { success: false, error: 'An unexpected error occurred during signup. Please try again.' };
     }
   };
 
@@ -207,6 +236,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       console.log('Logging out...');
       await supabase.auth.signOut();
+      setUser(null);
+      setSession(null);
     } catch (error) {
       console.error('Logout error:', error);
     }

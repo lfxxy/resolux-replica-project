@@ -24,8 +24,53 @@ const LoginPage = () => {
     return null;
   }
 
+  const validateForm = () => {
+    if (!email.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter your email address.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    if (!email.includes('@')) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter a valid email address.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    if (!password || password.length < 6) {
+      toast({
+        title: "Validation Error",
+        description: "Password must be at least 6 characters long.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    if (!isLogin && !username.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter a username.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -34,7 +79,7 @@ const LoginPage = () => {
         if (result.success) {
           toast({
             title: "Success",
-            description: "Welcome back to Resolux"
+            description: "Welcome back to Resolux!"
           });
           navigate("/home");
         } else {
@@ -51,7 +96,11 @@ const LoginPage = () => {
             title: "Account Created",
             description: "Please check your email and click the confirmation link to complete your registration."
           });
-          // Don't navigate automatically for signup - wait for email confirmation
+          // Reset form after successful signup
+          setEmail("");
+          setPassword("");
+          setUsername("");
+          setIsLogin(true); // Switch to login view
         } else {
           toast({
             title: "Registration Failed",
@@ -115,6 +164,7 @@ const LoginPage = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  disabled={loading}
                   className="bg-black border-gray-700 text-white placeholder:text-gray-500 focus:border-red-600 focus:ring-red-600"
                 />
               </div>
@@ -127,6 +177,7 @@ const LoginPage = () => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
+                    disabled={loading}
                     className="bg-black border-gray-700 text-white placeholder:text-gray-500 focus:border-red-600 focus:ring-red-600"
                   />
                 </div>
@@ -140,6 +191,7 @@ const LoginPage = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={6}
+                  disabled={loading}
                   className="bg-black border-gray-700 text-white placeholder:text-gray-500 focus:border-red-600 focus:ring-red-600"
                 />
               </div>
@@ -156,8 +208,15 @@ const LoginPage = () => {
             <div className="mt-6 text-center">
               <button
                 type="button"
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-red-500 hover:text-red-400 text-sm font-medium transition-colors"
+                onClick={() => {
+                  setIsLogin(!isLogin);
+                  // Clear form when switching
+                  setEmail("");
+                  setPassword("");
+                  setUsername("");
+                }}
+                disabled={loading}
+                className="text-red-500 hover:text-red-400 text-sm font-medium transition-colors disabled:opacity-50"
               >
                 {isLogin ? "Need an account? Sign up here" : "Already have an account? Sign in"}
               </button>
