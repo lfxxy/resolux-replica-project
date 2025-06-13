@@ -59,6 +59,7 @@ const Subscription = () => {
   };
 
   const handleAddToBasket = async (plan: typeof plans[0]) => {
+    console.log('Adding to basket:', plan.name, plan.priceInCents);
     const priceInDollars = plan.priceInCents / 100;
     await addToBasket(
       `Resolux ${plan.name} Subscription`,

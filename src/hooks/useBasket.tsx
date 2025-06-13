@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,7 +12,6 @@ interface BasketItem {
   price: number;
   quantity: number;
   created_at: string;
-  // Add subscription-specific fields
   plan_type?: string;
   price_in_cents?: number;
 }
@@ -53,6 +53,8 @@ export const useBasket = () => {
   }, [user?.id]);
 
   const addToBasket = useCallback(async (productName: string, productType: string, price: number, planType?: string, priceInCents?: number) => {
+    console.log('addToBasket called with:', { productName, productType, price, planType, priceInCents });
+    
     if (!user?.id) {
       toast({
         title: "Error",
@@ -68,7 +70,12 @@ export const useBasket = () => {
       );
 
       if (existingItem) {
+        console.log('Item already exists, updating quantity');
         await updateQuantity(existingItem.id, existingItem.quantity + 1);
+        toast({
+          title: "Success",
+          description: "Item quantity updated in basket",
+        });
         return;
       }
 
@@ -80,9 +87,10 @@ export const useBasket = () => {
         quantity: 1
       };
 
-      // Add subscription-specific fields if provided
       if (planType) insertData.plan_type = planType;
       if (priceInCents) insertData.price_in_cents = priceInCents;
+
+      console.log('Inserting new item:', insertData);
 
       const { error } = await supabase
         .from('basket_items')
@@ -90,17 +98,27 @@ export const useBasket = () => {
 
       if (error) {
         console.error('Error adding to basket:', error);
+        toast({
+          title: "Error",
+          description: "Failed to add item to basket",
+          variant: "destructive"
+        });
         return;
       }
 
       toast({
         title: "Success",
-        description: "Item added to basket",
+        description: `${productName} added to basket`,
       });
 
       await fetchBasketItems();
     } catch (error) {
       console.error('Error adding to basket:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add item to basket",
+        variant: "destructive"
+      });
     }
   }, [user?.id, items, toast, fetchBasketItems]);
 
