@@ -18,7 +18,7 @@ const Header = () => {
         <div className="flex items-center space-x-8">
           <Link to="/home" className="flex items-center hover:opacity-80 transition-opacity">
             <img 
-              src="/lovable-uploads/fdfd75fd-0287-47f9-820e-e9d7f5f65f01.png" 
+              src="/lovable-uploads/c61e5f43-ae60-42c3-b015-9fdc58ff9bb2.png" 
               alt="Logo" 
               className="h-10 w-auto"
               loading="eager"

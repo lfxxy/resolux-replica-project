@@ -8,7 +8,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-between">
           <div className="flex items-center mb-4 md:mb-0">
             <img 
-              src="/lovable-uploads/fdfd75fd-0287-47f9-820e-e9d7f5f65f01.png" 
+              src="/lovable-uploads/c61e5f43-ae60-42c3-b015-9fdc58ff9bb2.png" 
               alt="Logo" 
               className="h-14 w-auto"
               loading="lazy"
