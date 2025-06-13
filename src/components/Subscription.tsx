@@ -19,7 +19,7 @@ const Subscription = () => {
       duration: "7 days",
       planType: "weekly",
       icon: Zap,
-      features: ["Full access to all features", "Basic support", "Regular updates"],
+      features: ["CS2 Aimbot & ESP", "Wallhack features", "Basic anti-detection", "Regular updates", "Discord support"],
       popular: false
     },
     {
@@ -29,7 +29,7 @@ const Subscription = () => {
       duration: "14 days",
       planType: "biweekly",
       icon: Crown,
-      features: ["Full access to all features", "Priority support", "Regular updates", "Early access to new features"],
+      features: ["All CS2 features", "Advanced aimbot settings", "Custom crosshair overlay", "Priority support", "Early access to updates", "Stream-proof mode"],
       popular: true
     },
     {
@@ -39,7 +39,7 @@ const Subscription = () => {
       duration: "30 days",
       planType: "monthly",
       icon: Crown,
-      features: ["Full access to all features", "Priority support", "Regular updates", "Early access to new features", "Custom configurations"],
+      features: ["Premium CS2 suite", "Rage & Legit modes", "Skin changer", "Inventory spoofer", "Custom configurations", "VIP Discord access", "1-on-1 setup help"],
       popular: false
     },
     {
@@ -49,7 +49,7 @@ const Subscription = () => {
       duration: "12 months",
       planType: "yearly",
       icon: Infinity,
-      features: ["Full access to all features", "VIP support", "All future updates", "Early access to new features", "Custom configurations", "Priority feature requests"],
+      features: ["Ultimate CS2 package", "All current & future features", "Private build access", "Custom feature requests", "Dedicated support agent", "Lifetime updates", "Community VIP status"],
       popular: false
     }
   ];
@@ -78,9 +78,9 @@ const Subscription = () => {
     <section id="subscriptions" className="py-16 bg-gradient-to-br from-black via-gray-900 to-red-900/20">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-white mb-4">Choose Your Plan</h2>
+          <h2 className="text-4xl font-bold text-white mb-4">Choose Your CS2 Plan</h2>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            Get premium access to Resolux and dominate your gaming experience
+            Get premium access to Resolux CS2 and dominate your Counter-Strike 2 experience
           </p>
           {subscribed && (
             <div className="mt-4 flex justify-center gap-4">

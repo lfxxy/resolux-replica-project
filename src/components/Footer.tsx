@@ -9,11 +9,11 @@ const Footer = () => {
           <div className="flex items-center mb-4 md:mb-0">
             <img 
               src="/lovable-uploads/fdfd75fd-0287-47f9-820e-e9d7f5f65f01.png" 
-              alt="Logo" 
-              className="h-20 w-auto"
+              alt="Resolux Logo" 
+              className="h-16 w-auto"
               loading="lazy"
               width="auto"
-              height="80"
+              height="64"
             />
           </div>
           
@@ -40,7 +40,7 @@ const Footer = () => {
         </div>
         
         <div className="mt-6 pt-6 border-t border-red-900/30 text-center text-gray-500 text-sm">
-          © 2024 All rights reserved.
+          © 2025 Resolux. All rights reserved.
         </div>
       </div>
     </footer>

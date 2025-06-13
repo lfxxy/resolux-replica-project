@@ -1,4 +1,3 @@
-
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PaymentStrip from "@/components/PaymentStrip";
@@ -10,9 +9,9 @@ import { MessageSquare, User, Shield, Zap } from "lucide-react";
 
 const HomePage = () => {
   const slogans = [
-    "Dominate the Game, Not Your Wallet.",
-    "Premium Performance, Competitive Cost.",
-    "Affordable Mods. Unbeatable Control."
+    "Dominate CS2, Not Your Wallet.",
+    "Premium CS2 Performance, Competitive Cost.",
+    "Affordable CS2 Mods. Unbeatable Control."
   ];
 
   const features = [
@@ -49,11 +48,11 @@ const HomePage = () => {
             <div className="flex items-center justify-center mb-4">
               <img 
                 src="/lovable-uploads/fdfd75fd-0287-47f9-820e-e9d7f5f65f01.png" 
-                alt="Logo" 
-                className="h-80 w-auto"
+                alt="Resolux Logo" 
+                className="h-64 w-auto"
                 loading="eager"
                 width="auto"
-                height="320"
+                height="256"
               />
             </div>
             
@@ -66,8 +65,8 @@ const HomePage = () => {
             </div>
             
             <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-8">
-              Experience the next generation of gaming enhancement with our professional-grade modification tools, 
-              designed for serious gamers who demand excellence without compromise.
+              Experience the next generation of CS2 gaming enhancement with our professional-grade modification tools, 
+              designed for serious Counter-Strike 2 players who demand excellence without compromise.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

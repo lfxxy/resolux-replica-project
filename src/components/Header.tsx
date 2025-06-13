@@ -19,11 +19,11 @@ const Header = () => {
           <Link to="/home" className="flex items-center hover:opacity-80 transition-opacity">
             <img 
               src="/lovable-uploads/c61e5f43-ae60-42c3-b015-9fdc58ff9bb2.png" 
-              alt="Logo" 
-              className="h-10 w-auto"
+              alt="Resolux Logo" 
+              className="h-8 w-8"
               loading="eager"
-              width="auto"
-              height="40"
+              width="32"
+              height="32"
             />
           </Link>
           <nav className="flex space-x-6">
