@@ -29,11 +29,9 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      let success = false;
-      
       if (isLogin) {
-        success = await login(email, password);
-        if (success) {
+        const result = await login(email, password);
+        if (result.success) {
           toast({
             title: "Success",
             description: "Welcome back to Resolux"
@@ -42,13 +40,13 @@ const LoginPage = () => {
         } else {
           toast({
             title: "Login Failed",
-            description: "Invalid email or password. Please check your credentials and try again.",
+            description: result.error || "Invalid email or password. Please check your credentials and try again.",
             variant: "destructive"
           });
         }
       } else {
-        success = await signup(email, password, username);
-        if (success) {
+        const result = await signup(email, password, username);
+        if (result.success) {
           toast({
             title: "Account Created",
             description: "Please check your email and click the confirmation link to complete your registration."
@@ -57,7 +55,7 @@ const LoginPage = () => {
         } else {
           toast({
             title: "Registration Failed",
-            description: "Unable to create account. Please try again.",
+            description: result.error || "Unable to create account. Please try again.",
             variant: "destructive"
           });
         }
